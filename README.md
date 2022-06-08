@@ -3,7 +3,6 @@
 ![Code Quality Workflow](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/code-quality.yml/badge.svg?branch=main)
 ![Code Quality](https://api.codiga.io/project/00000/score/svg)
 ![Code Grade](https://api.codiga.io/project/00000/status/svg)
-
 ```
  ____        _     ___ _____
 |  _ \ _   _| |   / _ \_   _|
@@ -12,6 +11,9 @@
 |_|    \__, |_____\___/ |_|
        |___/
 ```
+
+![PyLOT](pilot.png)
+
 # Overview 
 Python cLoud Operations Tool (PyLOT) is a python command line tool designed to help DAAC operators solve the operations edge cases that can't be solved (or which are difficult/time consuming) using [Cumulus Dashboard](https://github.com/nasa/cumulus-dashboard). 
 <br>
