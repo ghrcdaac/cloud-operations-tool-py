@@ -4,7 +4,7 @@
 ![Code Quality](https://api.codiga.io/project/00000/score/svg)
 ![Code Grade](https://api.codiga.io/project/00000/status/svg)
 
-<img src="pilot.png"
+<img src="img/pilot.png"
      alt="Markdown Monster icon"
      style="width: 25%; float: left; margin-right: 10px" />
 ```
