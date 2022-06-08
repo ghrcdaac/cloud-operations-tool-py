@@ -1,3 +1,9 @@
+[![Coverage Status](https://coveralls.io/repos/github/ghrcdaac/cloud-operations-tool-py/badge.svg?branch=main)](https://coveralls.io/github/ghrcdaac/cloud-operations-tool-py?branch=main)
+![Build Status](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/build.yml/badge.svg?branch=main)
+![Code Quality Workflow](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/code-quality.yml/badge.svg?branch=main)
+![Code Quality](https://api.codiga.io/project/00000/score/svg)
+![Code Grade](https://api.codiga.io/project/00000/status/svg)
+
 ```
  ____        _     ___ _____
 |  _ \ _   _| |   / _ \_   _|
