@@ -29,3 +29,7 @@ PyLOT can run as a command line tool in your local machine and accept options an
 PyLOT can overcome the limitation of Cumulus-API by monitoring the status of AWS resources (Cloudwatch, SFN, S3...).
 <br>
 This tool will prevent reinventing the wheel, since a solution for a common problem can be easily shared among all the DAACs (sharing is caring).
+
+## 📖 Documentation
+
+- Release note [v1.0.0](https://ghrcdaac.github.io/cloud-operations-tool-py/#v100).
