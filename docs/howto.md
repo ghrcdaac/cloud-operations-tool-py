@@ -1,1 +1,1 @@
-# This is How to
+# How To
