@@ -1,8 +1,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/ghrcdaac/cloud-operations-tool-py/badge.svg?branch=main)](https://coveralls.io/github/ghrcdaac/cloud-operations-tool-py?branch=main)
-![Build Status](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/build.yml/badge.svg?branch=main)
+![Build Status](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/build-and-test.yml/badge.svg?branch=main)
 ![Code Quality Workflow](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/code-quality.yml/badge.svg?branch=main)
-![Code Quality](https://api.codiga.io/project/00000/score/svg)
-![Code Grade](https://api.codiga.io/project/00000/status/svg)
+![Code Quality](https://api.codiga.io/project/33781/score/svg)
+![Code Grade](https://api.codiga.io/project/33781/status/svg)
 
 <img src="img/pilot.png"
      alt="Markdown Monster icon"
@@ -18,8 +18,8 @@
 
 
 
-# Overview 
-Python cLoud Operations Tool (PyLOT) is a python command line tool designed to help DAAC operators solve the operations edge cases that can't be solved (or which are difficult/time consuming) using [Cumulus Dashboard](https://github.com/nasa/cumulus-dashboard). 
+# Overview
+Python cLoud Operations Tool (PyLOT) is a python command line tool designed to help DAAC operators solve the operations edge cases that can't be solved (or which are difficult/time consuming) using [Cumulus Dashboard](https://github.com/nasa/cumulus-dashboard).
 <br>
 Since it is powered by Cumulus-API it will allow the operators to interact with [Cumulus stack](https://github.com/nasa/cumulus), for example to monitor the granules status, run rules, and create and update Cumulus records (collections and/or granules).
 In some cases interacting with Cumulus-API via the dashboard is sufficient, but there are some edge cases that require the operator to have a tool that provides more flexibility than a Web-Based application.
