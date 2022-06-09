@@ -9,6 +9,7 @@ import boto3
 from .cumulus_token import CumulusToken
 
 
+# pylint: disable=too-many-public-methods
 class CumulusApi:
     def __init__(self, use_os_env: bool = True, config_path: str = None, token: str = None):
         """
