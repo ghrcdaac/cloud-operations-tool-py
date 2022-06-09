@@ -1,5 +1,5 @@
 
- name: Build & Release
+ name: Build & Test
  on:
    push:
 
@@ -16,11 +16,16 @@
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install package
+      - name: Install package and dependencies
         run: |
           python3 -m pip install .
-      - name: Install DEV dependencies
-        run: |
           python3 -m pip install -r requirements-dev.txt
-          flake8 --version
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Types with mypy
+        run: |
+          mypy --ignore-missing-imports  pylot/
+
 
