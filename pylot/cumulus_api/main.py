@@ -1,11 +1,11 @@
 import logging
-import boto3
 from typing import Union
 import os
 from configparser import SectionProxy
 from configparser import ConfigParser
 from json.decoder import JSONDecodeError
 import requests
+import boto3
 from .cumulus_token import CumulusToken
 
 
@@ -34,7 +34,7 @@ class CumulusApi:
 
         self.cumulus_token = CumulusToken(boto3_session=boto3, config=config)
         self.TOKEN = token if token else self.cumulus_token.get_token()
-        self.HEADERS = {'Authorization': 'Bearer {}'.format(self.TOKEN)}
+        self.HEADERS = {'Authorization': f'Bearer {self.TOKEN}'}
 
     def __crud_records(self, record_type, verb, data=None, **kwargs):
         """
@@ -49,8 +49,8 @@ class CumulusApi:
         url = f"{self.INVOKE_BASE_URL}/v1/{record_type}"
         and_sign = ""
         query = ""
-        for ele in kwargs.keys():
-            query = f"{query}{and_sign}{ele}={kwargs[ele]}"
+        for key, value in kwargs.items():
+            query = f"{query}{and_sign}{key}={value}"
             and_sign = "&"
         if kwargs:
             url = f"{url}?{query}"
@@ -58,7 +58,8 @@ class CumulusApi:
         try:
             return re.json()
         except JSONDecodeError as err:
-            logging.error(f"Cumulus CRUD: {err}")
+
+            logging.error("Cumulus CRUD: %s", err)
             return re.content
 
     # ============== Version ===============
