@@ -19,4 +19,8 @@
       - name: Install package
         run: |
           python3 -m pip install .
+      - name: Install DEV dependencies
+        run: |
+          python3 -m pip install -r requirements-dev.txt
+          flake8 --version
 
