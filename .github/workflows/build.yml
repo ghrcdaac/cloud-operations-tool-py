@@ -1,5 +1,7 @@
 name: Test & Build
-on: [push]
+on:
+  push
+
 jobs:
   build:
     runs-on: ubuntu-latest
