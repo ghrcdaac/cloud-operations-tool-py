@@ -27,7 +27,7 @@ class CumulusToken:
         self.boto3_session = boto3_session
         self.config = config
 
-    def get_launchpad_certificate_body_s3(self, s3_certificate_path: str) -> bytes:
+    def __get_launchpad_certificate_body_s3(self, s3_certificate_path: str) -> bytes:
         """
         :param s3_certificate_path: S3 path of launchpad certificate
         :type s3_certificate_path: string
@@ -44,10 +44,10 @@ class CumulusToken:
         return obj.get()['Body'].read()
 
     @staticmethod
-    def get_launchpad_certificate_body_file_system(certificate_path):
+    def __get_launchpad_certificate_body_file_system(certificate_path: str):
         """
-        :param config:
-        :type config:
+        :param certificate_path:
+        :type certificate_path:
         :return:
         :rtype:
         """
@@ -55,7 +55,7 @@ class CumulusToken:
             pkcs12_data = pkcs12_file.read()
         return pkcs12_data
 
-    def get_launchpad_pass_phrase_secret_manager(self, secret_manager_id):
+    def __get_launchpad_pass_phrase_secret_manager(self, secret_manager_id):
         """
         :param secret_manager_id:
         :type secret_manager_id:
@@ -66,7 +66,7 @@ class CumulusToken:
         response = client.get_secret_value(SecretId=secret_manager_id)
         return response['SecretString']
 
-    def get_token_launchpad(self):
+    def __get_token_launchpad(self):
         """
         Get token using launchpad authentication
         return: cumulus token
@@ -78,12 +78,12 @@ class CumulusToken:
             pkcs12_data = ""
             pkcs12_password_bytes = b""
             if config.get("FS_LAUNCHPAD_CERT"):
-                pkcs12_data = self.get_launchpad_certificate_body_file_system(config.get("FS_LAUNCHPAD_CERT"))
+                pkcs12_data = self.__get_launchpad_certificate_body_file_system(config.get("FS_LAUNCHPAD_CERT"))
             if config.get("S3URI_LAUNCHPAD_CERT"):
-                pkcs12_data = self.get_launchpad_certificate_body_s3(config.get("S3URI_LAUNCHPAD_CERT"))
+                pkcs12_data = self.__get_launchpad_certificate_body_s3(config.get("S3URI_LAUNCHPAD_CERT"))
             pass_phrase_secret_manager_id = config.get("LAUNCHPAD_PASSPHRASE_SECRET_NAME")
             if pass_phrase_secret_manager_id:
-                pkcs12_password_bytes = self.get_launchpad_pass_phrase_secret_manager(
+                pkcs12_password_bytes = self.__get_launchpad_pass_phrase_secret_manager(
                     pass_phrase_secret_manager_id).encode()
             elif config.get("LAUNCHPAD_PASSPHRASE"):
                 pkcs12_password_bytes = config.get("LAUNCHPAD_PASSPHRASE").encode()
@@ -120,6 +120,6 @@ class CumulusToken:
         Get Earth Data Token
         :return: Token otherwise raise exception
         """
-        return self.get_token_launchpad()
+        return self.__get_token_launchpad()
 
 

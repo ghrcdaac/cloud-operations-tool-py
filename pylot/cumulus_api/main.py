@@ -1,10 +1,11 @@
-import requests
 import logging
 import boto3
-from configparser import SectionProxy
 from typing import Union
 import os
+from configparser import SectionProxy
 from configparser import ConfigParser
+from json.decoder import JSONDecodeError
+import requests
 from .cumulus_token import CumulusToken
 
 
@@ -44,20 +45,20 @@ class CumulusApi:
         """
         allowed_verbs = ['GET', 'POST', 'PUT', 'DELETE']
         if verb.upper() not in allowed_verbs:
-            return "{} is not a supported http request".format(verb)
+            return f"{verb} is not a supported http request"
         url = f"{self.INVOKE_BASE_URL}/v1/{record_type}"
         and_sign = ""
         query = ""
         for ele in kwargs.keys():
-            query = "{}{}{}={}".format(query, and_sign, ele, kwargs[ele])
+            query = f"{query}{and_sign}{ele}={kwargs[ele]}"
             and_sign = "&"
         if kwargs:
-            url = "{}?{}".format(url, query)
+            url = f"{url}?{query}"
         re = getattr(requests, verb.lower())(url=url, json=data, headers=self.HEADERS)
         try:
             return re.json()
-        except Exception as e:
-            logging.error("%s" % str(e))
+        except JSONDecodeError as err:
+            logging.error(f"Cumulus CRUD: {err}")
             return re.content
 
     # ============== Version ===============
@@ -78,7 +79,7 @@ class CumulusApi:
         # data = {"token": self.TOKEN}
         # refreshed_token = self.__crud_records(record_type="refresh", verb="post", data=data)
         self.TOKEN = self.cumulus_token.get_token()
-        self.HEADERS = {'Authorization': 'Bearer {}'.format(self.TOKEN)}
+        self.HEADERS = {'Authorization': f'Bearer {self.TOKEN}'}
 
         # refreshed_token.get('token')
         return True
@@ -255,7 +256,7 @@ class CumulusApi:
         :return:
         """
         record_type = f"granules/{granule_id}"
-        data = dict() if data is None else data
+        data = {} if data is None else data
         data.update({"action": "reingest"})
         return self.__crud_records(record_type=record_type, data=data, verb="put")
 
@@ -309,7 +310,7 @@ class CumulusApi:
         :param data:
         :return:
         """
-        record_type = f"granules/bulk"
+        record_type = "granules/bulk"
         return self.__crud_records(record_type=record_type, data=data, verb="post")
 
     def bulk_delete(self, data):
