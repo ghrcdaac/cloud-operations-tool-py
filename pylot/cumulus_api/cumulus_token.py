@@ -2,7 +2,6 @@
 import re
 import logging
 from configparser import SectionProxy
-import requests
 from typing import Union
 from types import ModuleType
 from cryptography.hazmat.primitives.serialization.pkcs12 import (
@@ -15,6 +14,7 @@ from cryptography.hazmat.primitives.serialization import (
 )
 from cryptography.hazmat.backends import default_backend
 from requests_toolbelt.adapters.x509 import X509Adapter
+import requests
 
 
 class CumulusToken:
@@ -66,28 +66,48 @@ class CumulusToken:
         response = client.get_secret_value(SecretId=secret_manager_id)
         return response['SecretString']
 
-    def __get_token_launchpad(self):
+    def __get_launchpad_certificate_body(self, config: dict) -> bytes:
         """
-        Get token using launchpad authentication
+
+        :param config:
+        :type config:
+        :return:
+        :rtype:
+        """
+        pkcs12_data: bytes = b""
+        if config.get("FS_LAUNCHPAD_CERT"):
+            pkcs12_data = self.__get_launchpad_certificate_body_file_system(config.get("FS_LAUNCHPAD_CERT"))
+        if config.get("S3URI_LAUNCHPAD_CERT"):
+            pkcs12_data = self.__get_launchpad_certificate_body_s3(config.get("S3URI_LAUNCHPAD_CERT"))
+        return pkcs12_data
+
+    def __get_launchpad_secret_phrase(self, config: dict) -> bytes:
+        """
+
+        :param config:
+        :type config:
+        :return:
+        :rtype:
+        """
+        pass_phrase_secret_manager_id = config.get("LAUNCHPAD_PASSPHRASE_SECRET_NAME")
+        if pass_phrase_secret_manager_id:
+            pkcs12_password_bytes = self.__get_launchpad_pass_phrase_secret_manager(
+                pass_phrase_secret_manager_id).encode()
+            return pkcs12_password_bytes
+        else:
+            return config.get("LAUNCHPAD_PASSPHRASE").encode()
+
+    def __get_launchpad_adapter(self):
+        """
+        Get launchpad adopter
         return: cumulus token
         """
-        error_str = "Getting the token (Launchpad)"
+        error_str = "Getting launchpad adapter"
         config = self.config
         try:
             backend = default_backend()
-            pkcs12_data = ""
-            pkcs12_password_bytes = b""
-            if config.get("FS_LAUNCHPAD_CERT"):
-                pkcs12_data = self.__get_launchpad_certificate_body_file_system(config.get("FS_LAUNCHPAD_CERT"))
-            if config.get("S3URI_LAUNCHPAD_CERT"):
-                pkcs12_data = self.__get_launchpad_certificate_body_s3(config.get("S3URI_LAUNCHPAD_CERT"))
-            pass_phrase_secret_manager_id = config.get("LAUNCHPAD_PASSPHRASE_SECRET_NAME")
-            if pass_phrase_secret_manager_id:
-                pkcs12_password_bytes = self.__get_launchpad_pass_phrase_secret_manager(
-                    pass_phrase_secret_manager_id).encode()
-            elif config.get("LAUNCHPAD_PASSPHRASE"):
-                pkcs12_password_bytes = config.get("LAUNCHPAD_PASSPHRASE").encode()
-
+            pkcs12_data = self.__get_launchpad_certificate_body(config)
+            pkcs12_password_bytes = self.__get_launchpad_secret_phrase(config)
             pycaP12 = load_key_and_certificates(
                 pkcs12_data, pkcs12_password_bytes, backend
             )
@@ -96,20 +116,13 @@ class CumulusToken:
             pk_bytes = pycaP12[0].private_bytes(
                 Encoding.DER, PrivateFormat.PKCS8, NoEncryption()
             )
-
             adapter = X509Adapter(
                 max_retries=3,
                 cert_bytes=cert_bytes,
                 pk_bytes=pk_bytes,
                 encoding=Encoding.DER,
             )
-            session = requests.Session()
-            session.mount("https://", adapter)
-
-            r = session.get(config.get("LAUNCHPAD_URL"))
-            response = r.json()
-            token = response["sm_token"]
-            return token
+            return adapter
         except Exception as ex:
             error_str = f"{error_str} {str(ex)}"
             logging.error(error_str)
@@ -117,9 +130,18 @@ class CumulusToken:
 
     def get_token(self):
         """
-        Get Earth Data Token
+        Get token using launchpad authentication
         :return: Token otherwise raise exception
         """
-        return self.__get_token_launchpad()
-
-
+        error_str = "Getting launchpad token"
+        try:
+            adapter = self.__get_launchpad_adapter()
+            session = requests.Session()
+            session.mount("https://", adapter)
+            r = session.get(self.config.get("LAUNCHPAD_URL"))
+            response = r.json()
+            return response["sm_token"]
+        except Exception as exp:
+            error_str = f"{error_str} {str(exp)}"
+            logging.error(error_str)
+            raise Exception(error_str)
