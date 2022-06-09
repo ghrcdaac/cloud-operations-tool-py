@@ -13,8 +13,9 @@ from cryptography.hazmat.primitives.serialization import (
     NoEncryption,
 )
 from cryptography.hazmat.backends import default_backend
-from requests_toolbelt.adapters.x509 import X509Adapter
 import requests
+from requests_toolbelt.adapters.x509 import X509Adapter
+
 
 
 class CumulusToken:
@@ -94,8 +95,7 @@ class CumulusToken:
             pkcs12_password_bytes = self.__get_launchpad_pass_phrase_secret_manager(
                 pass_phrase_secret_manager_id).encode()
             return pkcs12_password_bytes
-        else:
-            return config.get("LAUNCHPAD_PASSPHRASE").encode()
+        return config.get("LAUNCHPAD_PASSPHRASE").encode()
 
     def __get_launchpad_adapter(self):
         """
