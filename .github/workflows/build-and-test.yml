@@ -1,0 +1,32 @@
+
+ name: Build & Test
+ on:
+   push:
+
+ jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build & Test
+    strategy:
+      matrix:
+        python-version: ['3.9' ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package and dependencies
+        run: |
+          python3 -m pip install .
+          python3 -m pip install -r requirements-dev.txt
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Types with mypy
+        run: |
+          mypy --ignore-missing-imports  pylot/
+
+
