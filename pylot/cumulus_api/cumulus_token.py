@@ -2,7 +2,7 @@
 import re
 import logging
 from configparser import SectionProxy
-from typing import Union
+from typing import Union, Dict
 from types import ModuleType
 from cryptography.hazmat.primitives.serialization.pkcs12 import (
     load_key_and_certificates,
@@ -45,7 +45,7 @@ class CumulusToken:
         return obj.get()['Body'].read()
 
     @staticmethod
-    def __get_launchpad_certificate_body_file_system(certificate_path: str):
+    def __get_launchpad_certificate_body_file_system(certificate_path: str) -> bytes:
         """
         :param certificate_path:
         :type certificate_path:
@@ -56,7 +56,7 @@ class CumulusToken:
             pkcs12_data = pkcs12_file.read()
         return pkcs12_data
 
-    def __get_launchpad_pass_phrase_secret_manager(self, secret_manager_id):
+    def __get_launchpad_pass_phrase_secret_manager(self, secret_manager_id: str):
         """
         :param secret_manager_id:
         :type secret_manager_id:
@@ -67,7 +67,7 @@ class CumulusToken:
         response = client.get_secret_value(SecretId=secret_manager_id)
         return response['SecretString']
 
-    def __get_launchpad_certificate_body(self, config: dict) -> bytes:
+    def __get_launchpad_certificate_body(self, config: Dict[str,str]) -> bytes:
         """
 
         :param config:
@@ -77,9 +77,9 @@ class CumulusToken:
         """
         pkcs12_data: bytes = b""
         if config.get("FS_LAUNCHPAD_CERT"):
-            pkcs12_data = self.__get_launchpad_certificate_body_file_system(config.get("FS_LAUNCHPAD_CERT"))
+            pkcs12_data = self.__get_launchpad_certificate_body_file_system(config["FS_LAUNCHPAD_CERT"])
         if config.get("S3URI_LAUNCHPAD_CERT"):
-            pkcs12_data = self.__get_launchpad_certificate_body_s3(config.get("S3URI_LAUNCHPAD_CERT"))
+            pkcs12_data = self.__get_launchpad_certificate_body_s3(config["S3URI_LAUNCHPAD_CERT"])
         return pkcs12_data
 
     def __get_launchpad_secret_phrase(self, config: dict) -> bytes:
@@ -95,7 +95,7 @@ class CumulusToken:
             pkcs12_password_bytes = self.__get_launchpad_pass_phrase_secret_manager(
                 pass_phrase_secret_manager_id).encode()
             return pkcs12_password_bytes
-        return config.get("LAUNCHPAD_PASSPHRASE").encode()
+        return config.get("LAUNCHPAD_PASSPHRASE", "").encode()
 
     def __get_launchpad_adapter(self):
         """
