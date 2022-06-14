@@ -80,14 +80,24 @@ class CumulusToken:
         response = self.secretmanager_client.get_secret_value(SecretId=secret_manager_id)
         return response['SecretString']
 
-    def __get_launchpad_certificate_body(self, config: Dict[str, str]) -> bytes:
+    def get_launchpad_pass_phrase(self):
         """
 
-        :param config:
-        :type config:
         :return:
         :rtype:
         """
+        secret_pass_phrase = self.config.get('LAUNCHPAD_PASSPHRASE_SECRET_NAME')
+        if secret_pass_phrase:
+            return self.__get_launchpad_pass_phrase_secret_manager(secret_manager_id=secret_pass_phrase)
+        return self.config.get('LAUNCHPAD_PASSPHRASE')
+
+
+    def get_launchpad_certificate_body(self) -> bytes:
+        """
+        :return:
+        :rtype:
+        """
+        config = self.config
         pkcs12_data: bytes = b""
         if config.get("FS_LAUNCHPAD_CERT"):
             pkcs12_data = self.__get_launchpad_certificate_body_file_system(config["FS_LAUNCHPAD_CERT"])
@@ -95,17 +105,17 @@ class CumulusToken:
             pkcs12_data = self.__get_launchpad_certificate_body_s3(config["S3URI_LAUNCHPAD_CERT"])
         return pkcs12_data
 
-    def __get_launchpad_secret_phrase(self, config: dict) -> bytes:
+    def get_launchpad_secret_phrase(self) -> bytes:
         """
 
-        :param config:
-        :type config:
+
         :return:
         :rtype:
         """
+        config = self.config
         pass_phrase_secret_manager_id = config.get("LAUNCHPAD_PASSPHRASE_SECRET_NAME")
         if pass_phrase_secret_manager_id:
-            pkcs12_password_bytes = self.__get_launchpad_pass_phrase_secret_manager(
+            pkcs12_password_bytes = self.get_launchpad_pass_phrase_secret_manager(
                 pass_phrase_secret_manager_id).encode()
             return pkcs12_password_bytes
         return config.get("LAUNCHPAD_PASSPHRASE", "").encode()
@@ -118,8 +128,8 @@ class CumulusToken:
         error_str = "Getting launchpad adapter"
         try:
             backend = default_backend()
-            pkcs12_data = self.__get_launchpad_certificate_body(self.config)
-            pkcs12_password_bytes = self.__get_launchpad_secret_phrase(self.config)
+            pkcs12_data = self.get_launchpad_certificate_body()
+            pkcs12_password_bytes = self.get_launchpad_secret_phrase()
             pycaP12 = load_key_and_certificates(
                 pkcs12_data, pkcs12_password_bytes, backend
             )
