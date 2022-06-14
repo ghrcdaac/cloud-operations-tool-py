@@ -1,16 +1,15 @@
+import os
 import unittest
-from os import path
-from pylot.cumulus_api.cumulus_token import CumulusToken
-from moto import mock_s3, mock_secretsmanager
-import boto3
 import pytest
-
+import boto3
+from moto import mock_s3, mock_secretsmanager
+from pylot.cumulus_api.cumulus_token import CumulusToken
 
 class TestCumulusToken(unittest.TestCase):
     bucket_name = "test_bucket"
     certificate_s3_key = "temp/certificate.pfx"
     expected_body = "NoThingToS33HereExceptS@meRandoMText\n"
-    certificate_path = path.join(path.dirname(__file__), "fixtures/certificate.pfx")
+    certificate_path = os.path.join(os.path.dirname(__file__), "fixtures/certificate.pfx")
     secret_name = "fake_secretmanager"
     secret_string = "supersecretstring"
 
