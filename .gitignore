@@ -130,3 +130,6 @@ dmypy.json
 .idea
 .vscode
 *env.sh
+
+coverage
+.coverage
