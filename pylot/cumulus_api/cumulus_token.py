@@ -115,8 +115,7 @@ class CumulusToken:
         config = self.config
         pass_phrase_secret_manager_id = config.get("LAUNCHPAD_PASSPHRASE_SECRET_NAME")
         if pass_phrase_secret_manager_id:
-            pkcs12_password_bytes = self.get_launchpad_pass_phrase_secret_manager(
-                pass_phrase_secret_manager_id).encode()
+            pkcs12_password_bytes = self.get_launchpad_pass_phrase().encode()
             return pkcs12_password_bytes
         return config.get("LAUNCHPAD_PASSPHRASE", "").encode()
 
