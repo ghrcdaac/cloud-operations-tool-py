@@ -3,7 +3,7 @@ import re
 import logging
 from configparser import SectionProxy
 from typing import Union, Dict
-from types import ModuleType
+from .aws_services import AWS_Services
 from cryptography.hazmat.primitives.serialization.pkcs12 import (
     load_key_and_certificates,
 )
@@ -17,16 +17,29 @@ import requests
 from requests_toolbelt.adapters.x509 import X509Adapter
 
 
-
 class CumulusToken:
-    def __init__(self, boto3_session: ModuleType, config: Union[SectionProxy, dict]):
+    def __init__(self, config: Union[SectionProxy, dict]):
         """
 
-        :param boto3_session: Boto3 session to be used
-        :type boto3_session: boto3 class
+        :param config: PyLOT Configuration
+
         """
-        self.boto3_session = boto3_session
         self.config = config
+        aws_profile: Union[str, None] = self.config.get('AWS_PROFILE')
+        aws_region: str = self.config.get('AWS_REGION', 'us-west-2')
+        aws_services = AWS_Services(aws_profile=aws_profile, aws_region=aws_region)
+        self.s3_resource = aws_services.get_s3_resource()
+        self.secretmanager_client = aws_services.get_secretmanager_client()
+
+    def get_s3_object_body(self, bucket_name, prefix):
+        """
+
+        :return:
+        :rtype:
+        """
+        obj = self.s3_resource.Object(bucket_name=bucket_name, key=prefix)
+        return obj.get()['Body'].read()
+
 
     def __get_launchpad_certificate_body_s3(self, s3_certificate_path: str) -> bytes:
         """
@@ -39,10 +52,11 @@ class CumulusToken:
         if not groups:
             logging.error("S3 path should be of a format s3://<bucket_name>/path")
             raise Exception(f"{s3_certificate_path} is not of the format s3://<bucket_name>/path")
-        s3 = self.boto3_session.resource('s3')
         bucket_name, certificate_path = groups[1], groups[3]
-        obj = s3.Object(bucket_name=bucket_name, key=certificate_path)
-        return obj.get()['Body'].read()
+
+        return self.get_s3_object_body(bucket_name=bucket_name, prefix=certificate_path)
+
+
 
     @staticmethod
     def __get_launchpad_certificate_body_file_system(certificate_path: str) -> bytes:
@@ -63,11 +77,10 @@ class CumulusToken:
         :return:
         :rtype:
         """
-        client = self.boto3_session.client('secretsmanager')
-        response = client.get_secret_value(SecretId=secret_manager_id)
+        response = self.secretmanager_client.get_secret_value(SecretId=secret_manager_id)
         return response['SecretString']
 
-    def __get_launchpad_certificate_body(self, config: Dict[str,str]) -> bytes:
+    def __get_launchpad_certificate_body(self, config: Dict[str, str]) -> bytes:
         """
 
         :param config:
@@ -103,11 +116,10 @@ class CumulusToken:
         return: cumulus token
         """
         error_str = "Getting launchpad adapter"
-        config = self.config
         try:
             backend = default_backend()
-            pkcs12_data = self.__get_launchpad_certificate_body(config)
-            pkcs12_password_bytes = self.__get_launchpad_secret_phrase(config)
+            pkcs12_data = self.__get_launchpad_certificate_body(self.config)
+            pkcs12_password_bytes = self.__get_launchpad_secret_phrase(self.config)
             pycaP12 = load_key_and_certificates(
                 pkcs12_data, pkcs12_password_bytes, backend
             )
