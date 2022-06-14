@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-import boto3
 from typing import Union
+import boto3
+
 
 @dataclass
 class AWS_Services:
@@ -18,5 +19,3 @@ class AWS_Services:
     @staticmethod
     def get_secretmanager_client():
         return boto3.client('secretsmanager')
-
-

@@ -49,7 +49,7 @@ class TestCumulusToken(unittest.TestCase):
             yield mocked_secretmanger_client
 
     def test__get_launchpad_certificate_body_raise(self):
-        s3_certificate_path = "/tmp/launchpad"
+        s3_certificate_path = "/fake/path/launchpad.pfx"
 
         with self.assertRaises(Exception) as context:
             self.cml_token._CumulusToken__get_launchpad_certificate_body_s3(s3_certificate_path=s3_certificate_path)
@@ -72,5 +72,3 @@ class TestCumulusToken(unittest.TestCase):
         secret = self.cml_token._CumulusToken__get_launchpad_pass_phrase_secret_manager(secret_manager_id=
                                                                                         "fake_secretmanager")
         self.assertEqual("supersecretstring", secret)
-
-
