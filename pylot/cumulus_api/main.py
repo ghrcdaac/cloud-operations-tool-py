@@ -5,7 +5,6 @@ from configparser import SectionProxy
 from configparser import ConfigParser
 from json.decoder import JSONDecodeError
 import requests
-import boto3
 from .cumulus_token import CumulusToken
 
 
@@ -29,11 +28,8 @@ class CumulusApi:
             config_parser.read(config_path)
             config = config_parser['DEFAULT']
         self.config = config
-        boto3.setup_default_session(profile_name=self.config.get('AWS_PROFILE'),
-                                    region_name=self.config.get('AWS_REGION', "us-west-2"))
         self.INVOKE_BASE_URL = self.config["INVOKE_BASE_URL"].rstrip('/')
-
-        self.cumulus_token = CumulusToken(boto3_session=boto3, config=config)
+        self.cumulus_token = CumulusToken(config=config)
         self.TOKEN = token if token else self.cumulus_token.get_token()
         self.HEADERS = {'Authorization': f'Bearer {self.TOKEN}'}
 
