@@ -1,10 +1,11 @@
 import logging
-from typing import Union
 import os
-from configparser import SectionProxy
-from configparser import ConfigParser
+from configparser import ConfigParser, SectionProxy
 from json.decoder import JSONDecodeError
+from typing import Union
+
 import requests
+
 from .cumulus_token import CumulusToken
 
 

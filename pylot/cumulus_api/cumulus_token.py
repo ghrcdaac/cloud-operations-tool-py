@@ -1,20 +1,19 @@
 
-import re
 import logging
+import re
 from configparser import SectionProxy
-from typing import Union, Dict
-from .aws_services import AWS_Services
-from cryptography.hazmat.primitives.serialization.pkcs12 import (
-    load_key_and_certificates,
-)
-from cryptography.hazmat.primitives.serialization import (
-    Encoding,
-    PrivateFormat,
-    NoEncryption,
-)
-from cryptography.hazmat.backends import default_backend
+from typing import Dict, Union
+
 import requests
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.serialization import (Encoding,
+                                                          NoEncryption,
+                                                          PrivateFormat)
+from cryptography.hazmat.primitives.serialization.pkcs12 import \
+    load_key_and_certificates
 from requests_toolbelt.adapters.x509 import X509Adapter
+
+from .aws_services import AWS_Services
 
 
 class CumulusToken:
