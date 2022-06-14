@@ -6,7 +6,6 @@ import boto3
 import pytest
 
 
-
 class TestCumulusToken(unittest.TestCase):
     bucket_name = "test_bucket"
     certificate_s3_key = "temp/certificate.pfx"
@@ -14,7 +13,6 @@ class TestCumulusToken(unittest.TestCase):
     certificate_path = path.join(path.dirname(__file__), "fixtures/certificate.pfx")
     secret_name = "fake_secretmanager"
     secret_string = "supersecretstring"
-
 
     def setUp(self) -> None:
         self.cml_token = CumulusToken(config={})
@@ -49,8 +47,6 @@ class TestCumulusToken(unittest.TestCase):
                 SecretString=self.secret_string
             )
             yield mocked_secretmanger_client
-
-
 
     def test__get_launchpad_certificate_body_raise(self):
         s3_certificate_path = "/tmp/launchpad"
