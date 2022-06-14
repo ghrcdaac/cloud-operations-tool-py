@@ -1,9 +1,12 @@
 import os
 import unittest
-import pytest
+
 import boto3
+import pytest
 from moto import mock_s3, mock_secretsmanager
+
 from pylot.cumulus_api.cumulus_token import CumulusToken
+
 
 class TestCumulusToken(unittest.TestCase):
     bucket_name = "test_bucket"
