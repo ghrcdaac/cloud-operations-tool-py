@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 import boto3
-
+from typing import Union
 
 @dataclass
 class AWS_Services:
-    aws_profile: str = None
-    aws_region: str = None
+    aws_region: str
+    aws_profile: Union[str, None] = None
 
     def __post_init__(self):
         boto3.setup_default_session(profile_name=self.aws_profile,
