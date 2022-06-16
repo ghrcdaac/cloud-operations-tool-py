@@ -35,6 +35,9 @@ setup(
         'License :: Freeware',
         'Programming Language :: Python :: 3.9',
     ],
+    entry_points={
+        'console_scripts': ['pylot=pylot.main:PyLOTClient.cli']
+    },
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,
     install_requires=install_requires,
