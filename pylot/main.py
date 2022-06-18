@@ -9,7 +9,7 @@ class PyLOTClient:
     pylot_options: PyLOTOptions = PyLOTOptions()
     @staticmethod
     def get_supported_options():
-        return ["get_records"]
+        return ["get_cumulus_records"]
 
     @staticmethod
     def get_data(arguments):
