@@ -2,16 +2,24 @@ import argparse
 import json
 import sys
 from dataclasses import dataclass, field
-
 from .options_factory import PyLOTOptionsFactory
 from .plugins import PyLOTHelpers
 from .plugins_loader import load_plogins
 
+PYLOT_FIGLET = """
+ ____        _     ___ _____
+|  _ \ _   _| |   / _ \_   _|
+| |_) | | | | |  | | | || |
+|  __/| |_| | |__| |_| || |
+|_|    \__, |_____\___/ |_|
+       |___/
+"""
 
 @dataclass
-class PyLOTClient:
+class PyLOTClient():
     options: dict = field(default_factory=dict[str, str])
-    
+
+
     @classmethod
     def get_supported_options(cls):
         cls.options = PyLOTHelpers.get_config_options()
@@ -30,11 +38,14 @@ class PyLOTClient:
         argv = sys.argv
         if len(argv) <= 1:
             argv.append('-h')
+        if argv[1] in ['-h', '--help']:
+            print(PYLOT_FIGLET)
+
         supported_options = cls.get_supported_options()
         if not set(argv).isdisjoint(supported_options):
             [argv.remove(ele) for ele in ['-h', '--help'] if ele in argv]
 
-        parser = argparse.ArgumentParser(description='Python cLoud operations Tool (PyLOT)', prog='PyLOT')
+        parser = argparse.ArgumentParser(description='Python cLoud operations Tool (PyLOT)', prog='pylot')
         parser.add_argument('option_to_use', choices=supported_options)
         args, unknown = parser.parse_known_args()
         
