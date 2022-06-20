@@ -1,9 +1,11 @@
-from dataclasses import dataclass, field
 import argparse
+import json
 import sys
+from dataclasses import dataclass, field
+
+from .options_factory import PyLOTOptionsFactory
 from .plugins import PyLOTHelpers
-from .options_factory import  create
-from .options_loader import load_plogins
+from .plugins_loader import load_plogins
 
 
 @dataclass
@@ -42,17 +44,16 @@ class PyLOTClient:
             if arg.startswith(("-", "--")):
                 parser.add_argument(arg, nargs='+')
         parser.parse_args()
-
         load_plogins(cls.options['plugins'])
-        options_added = [create(item) for item in cls.options['options']]
-        for option_added in options_added:
-            print(option_added)
+        pylot_options = {}
+        for progs in cls.options['options']:
+            pylot_options.update({progs['prog']['name']: PyLOTOptionsFactory.create(progs)}) 
+        
         if not unknown:
-            getattr(cls.pylot_options, args.option_to_use)(['-h'])
-
-        # result = getattr(cls.pylot_options, args.option_to_use)(unknown)
-        # print(json.dumps(result, indent=4))
-        print("hello")
+            unknown = ['-h']
+        
+        result = getattr(pylot_options[args.option_to_use], args.option_to_use)(unknown)
+        print(json.dumps(result, indent=4))
 
 
 if __name__ == "__main__":

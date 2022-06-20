@@ -1,30 +1,35 @@
-from typing import Callable, Any
+from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, ClassVar
+
 
 @dataclass
-class PyLOTOptions(Protocol):
-    def crud_records(self, argv: list[str]) -> dict:
-        """Generic function to Create Read Update Delete records"""
-        ...
+class PyLOTOptionsFactory():
 
-options_creation_functs: dict[str, Callable[..., PyLOTOptions]] = {}
+    character_creation_instances: ClassVar[dict] = {}
 
-def register(prog_name:str, creation_func:  Callable[..., PyLOTOptions]):
-    """Register a new program"""
-    options_creation_functs[prog_name] = creation_func
+    @classmethod
+    def register(cls, prog_name:str, creation_inst):
+        """Create new instance"""
+        cls.character_creation_instances[prog_name] = creation_inst
 
-def unregister(prog_name:str):
-    """Register a new charachter type"""
-    options_creation_functs.pop(prog_name, False)
 
-def create(arguments: dict[str, Any]) -> PyLOTOptions:
-    arguments_copy = arguments.copy()
-    prog = arguments_copy.pop('prog')
-    prog_name = prog.pop('name')
-    try:
-        creation_funct = options_creation_functs[prog_name]
-        print(creation_funct)
-        return creation_funct(**prog['flags'][0])
-    except KeyError:
-        raise ValueError(f"Unknown program name {prog_name}")
+    @classmethod
+    def create(cls, arguments: dict[str, Any]):
+        """
+        Will accept arguments as follow
+        {'prog' : {'name': '<name>', 'flags' : [<flags>]}}
+        """
+
+        prog = arguments['prog']
+        prog_name = prog['name']
+        try:
+            creation_inst = cls.character_creation_instances[prog_name]
+            flags = prog['flags']
+            parser = ArgumentParser(prog=prog_name)
+            for flag in flags:
+                name_or_flags = flag.pop('name_or_flags')
+                parser.add_argument(*name_or_flags.split(), **flag)
+            return creation_inst(parser)
+        except KeyError:
+            raise ValueError(f"Unknown prog name {prog_name}")

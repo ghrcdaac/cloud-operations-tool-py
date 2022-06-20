@@ -1,10 +1,11 @@
-from dataclasses import dataclass
-import os
 import json
+import os
 import pathlib
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
+
 from ..cumulus_api import CumulusApi
+
 
 @dataclass
 class PyLOTHelpers:
@@ -30,7 +31,7 @@ class PyLOTHelpers:
     @classmethod
     def get_cumulus_api_instance(self):
         """ Get Cumulus instance with cached token"""
-        get_hashed_file_name = self.hash_token_file()
+        get_hashed_file_name = self.get_hash_token_file()
         token: str
         tempfile = f'/tmp/{get_hashed_file_name}'
         if not os.path.isfile(tempfile):
