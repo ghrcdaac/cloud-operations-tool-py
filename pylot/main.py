@@ -1,8 +1,8 @@
 import argparse
 import json
 import sys
-import pyfiglet
 from dataclasses import field, dataclass
+import pyfiglet
 
 from .options_factory import PyLOTOptionsFactory
 from .plugins import PyLOTHelpers
