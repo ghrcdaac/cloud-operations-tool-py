@@ -3,3 +3,4 @@ pyOpenSSL==20.0.1
 requests==2.20.0
 requests-toolbelt==0.9.1
 boto3==1.14.12
+pyfiglet

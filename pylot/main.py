@@ -1,20 +1,14 @@
 import argparse
 import json
 import sys
+import pyfiglet
 from dataclasses import dataclass, field
 
 from .options_factory import PyLOTOptionsFactory
 from .plugins import PyLOTHelpers
 from .plugins_loader import load_plogins
 
-PYLOT_FIGLET = """
- ____        _     ___ _____
-|  _ \ _   _| |   / _ \_   _|
-| |_) | | | | |  | | | || |
-|  __/| |_| | |__| |_| || |
-|_|    \__, |_____\___/ |_|
-       |___/
-"""
+PYLOT_FIGLET = pyfiglet.figlet_format("PyLOT")
 
 @dataclass
 class PyLOTClient():
