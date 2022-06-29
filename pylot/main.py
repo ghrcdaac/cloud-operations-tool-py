@@ -2,7 +2,7 @@ import argparse
 import json
 import sys
 import pyfiglet
-from dataclasses import dataclass, field
+from dataclasses import field, dataclass
 
 from .options_factory import PyLOTOptionsFactory
 from .plugins import PyLOTHelpers
