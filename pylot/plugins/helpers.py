@@ -1,8 +1,10 @@
 import json
 import os
 import pathlib
+from tempfile import mkdtemp
 from dataclasses import dataclass
 from datetime import datetime
+
 
 from ..cumulus_api import CumulusApi
 
@@ -29,20 +31,17 @@ class PyLOTHelpers:
         return f"{now.day}-{now.hour}-{captured_time}"
 
     @classmethod
-    def get_cumulus_api_instance(self):
+    def get_cumulus_api_instance(cls):
         """ Get Cumulus instance with cached token"""
-        get_hashed_file_name = self.get_hash_token_file()
+        get_hashed_file_name = cls.get_hash_token_file()
         token: str
-        tempfile = f'/tmp/{get_hashed_file_name}'
+        tempfile = f'{mkdtemp()}/{get_hashed_file_name}'
         if not os.path.isfile(tempfile):
             with open(tempfile, 'w', encoding='utf-8') as _file:
-                
                 cml = CumulusApi()
                 _file.write(cml.TOKEN)
-        
         else:
             with open(tempfile, 'r', encoding='utf-8') as _file:
                 token = _file.readline()
                 cml = CumulusApi(token=token)
         return cml
-

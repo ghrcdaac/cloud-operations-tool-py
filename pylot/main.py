@@ -44,12 +44,11 @@ class PyLOTClient():
 
         supported_options = cls.get_supported_options()
         if not set(argv).isdisjoint(supported_options):
-            [argv.remove(ele) for ele in ['-h', '--help'] if ele in argv]
+            _ = [argv.remove(ele) for ele in ['-h', '--help'] if ele in argv]
 
         parser = argparse.ArgumentParser(description='Python cLoud operations Tool (PyLOT)', prog='pylot')
         parser.add_argument('option_to_use', choices=supported_options)
         args, unknown = parser.parse_known_args()
-        
 
         # parser.add_argument('-extra', '--extra', dest='extra', default=unknown, help='Arguments to sub command')
         for arg in unknown:
@@ -60,10 +59,8 @@ class PyLOTClient():
         pylot_options = {}
         for progs in cls.options['options']:
             pylot_options.update({progs['prog']['name']: PyLOTOptionsFactory.create(progs)}) 
-        
         if not unknown:
             unknown = ['-h']
-        
         result = getattr(pylot_options[args.option_to_use], args.option_to_use)(unknown)
         print(json.dumps(result, indent=4))
 
@@ -71,6 +68,3 @@ class PyLOTClient():
 if __name__ == "__main__":
     cc = PyLOTClient()
     cc.cli()
-
-
-

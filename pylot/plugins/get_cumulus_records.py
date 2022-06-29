@@ -3,7 +3,7 @@ from .helpers import PyLOTHelpers
 
 
 class GetCumulusRecords():
-    def __init__(self,parser) -> None:        
+    def __init__(self,parser) -> None:
         self.parser = parser
 
     def get_cumulus_records(self, argv):
