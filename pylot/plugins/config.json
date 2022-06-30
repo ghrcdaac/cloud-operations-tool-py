@@ -1,0 +1,38 @@
+{
+    "plugins": ["pylot.plugins.get_cumulus_records"],
+    "options": [
+        {
+            "prog": {
+                "name": "get_cumulus_records",
+                "flags": [
+                    {
+                        "name_or_flags": "-t, --type",
+                        "dest": "record_type",
+                        "choices": ["collections", "granules", "providers", "rules"],
+                        "nargs": 1,
+                        "help": "Record type (Granule| Granules|Collections)"
+                    },
+                    {
+                        "name_or_flags": "-f, --filter",
+                        "dest": "filter",
+                        "nargs": "+",
+                        "help": "filter the returned data (where x = y)"
+                    },
+                    {
+                        "name_or_flags": "-s, --select",
+                        "dest": "fields",
+                        "nargs": "+",
+                        "help": "select some fields from the requested data"
+                    },
+                    {
+                        "name_or_flags": "-l, --limit",
+                        "dest": "limit",
+                        "nargs": 1,
+                        "default": [10],
+                        "help": "Limit the requested data (default to 10)"
+                    }
+                ]
+            }
+        }
+    ]
+}
