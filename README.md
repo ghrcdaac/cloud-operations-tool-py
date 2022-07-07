@@ -5,12 +5,8 @@
 ![Code Grade](https://api.codiga.io/project/33781/status/svg)
 
 <img src="img/pylot.png"
-     alt="pylot"/>
+     alt="pylot" width=40% float=left margin-right=10px/>
 
-
-<style>
-img[alt=pylot] { width: 40%; float: left; margin-right: 10px}
-</style>
 ```
  ____        _     ___ _____
 |  _ \ _   _| |   / _ \_   _|
