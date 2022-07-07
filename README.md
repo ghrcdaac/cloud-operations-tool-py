@@ -6,6 +6,11 @@
 
 <img src="img/pylot.png"
      alt="pylot"/>
+
+
+<style>
+img[alt=pylot] { width: 40%; float: left; margin-right: 10px}
+</style>
 ```
  ____        _     ___ _____
 |  _ \ _   _| |   / _ \_   _|
