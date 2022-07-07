@@ -3,18 +3,11 @@
 ![Code Quality Workflow](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/code-quality.yml/badge.svg?branch=main)
 ![Code Quality](https://api.codiga.io/project/33781/score/svg)
 ![Code Grade](https://api.codiga.io/project/33781/status/svg)
-
+<p align="center">
 <img src="img/pylot.png"
-     alt="pylot" width=40% float=left margin-right=10px/>
+     alt="pylot"/>
+</p>
 
-```
- ____        _     ___ _____
-|  _ \ _   _| |   / _ \_   _|
-| |_) | | | | |  | | | || |
-|  __/| |_| | |__| |_| || |
-|_|    \__, |_____\___/ |_|
-       |___/
-```
 
 
 
@@ -29,6 +22,18 @@ PyLOT can run as a command line tool in your local machine and accept options an
 PyLOT can overcome the limitation of Cumulus-API by monitoring the status of AWS resources (Cloudwatch, SFN, S3...).
 <br>
 This tool will prevent reinventing the wheel, since a solution for a common problem can be easily shared among all the DAACs (sharing is caring).
+
+
+
+```
+ ____        _     ___ _____
+|  _ \ _   _| |   / _ \_   _|
+| |_) | | | | |  | | | || |
+|  __/| |_| | |__| |_| || |
+|_|    \__, |_____\___/ |_|
+       |___/
+```
+
 
 ## 📖 Documentation
 
