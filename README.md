@@ -4,8 +4,8 @@
 ![Code Quality](https://api.codiga.io/project/33781/score/svg)
 ![Code Grade](https://api.codiga.io/project/33781/status/svg)
 <p align="center">
-<img src="img/pylot.png"
-     alt="pylot"/>
+<img src="img/pylot.svg"
+     alt="pylot" width=50%/>
 </p>
 
 
