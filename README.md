@@ -5,8 +5,7 @@
 ![Code Grade](https://api.codiga.io/project/33781/status/svg)
 
 <img src="img/pylot.png"
-     alt="Markdown Monster icon"
-     style="width: 25%; float: left; margin-right: 10px" />
+     alt="pylot"/>
 ```
  ____        _     ___ _____
 |  _ \ _   _| |   / _ \_   _|
