@@ -1,12 +1,11 @@
 import json
 import os
 import pathlib
-from tempfile import mkdtemp
 from dataclasses import dataclass
 from datetime import datetime
+from tempfile import mkdtemp
 
-
-from ..cumulus_api import CumulusApi
+from pylot.cumulus_api import CumulusApi
 
 
 @dataclass
@@ -15,7 +14,7 @@ class PyLOTHelpers:
     @classmethod
     def get_config_options(cls):
         with open(os.path.join(pathlib.Path(__file__).parent.absolute(),
-                               './config.json'), 'r', encoding='utf-8') as _file:
+                               '../config.json'), 'r', encoding='utf-8') as _file:
             options = json.load(_file)
         return options
 

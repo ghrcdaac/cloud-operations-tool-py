@@ -1,17 +1,14 @@
 {
-    "plugins": ["pylot.plugins.get_cumulus_records"],
+    "plugins": [
+        "pylot.plugins.get_cumulus_records",
+        "pylot.plugins.get_status"
+
+    ],
     "options": [
         {
             "prog": {
-                "name": "get_cumulus_records",
+                "name": "get_status",
                 "flags": [
-                    {
-                        "name_or_flags": "-t, --type",
-                        "dest": "record_type",
-                        "choices": ["collections", "granules", "providers", "rules"],
-                        "nargs": 1,
-                        "help": "Record type (Granule| Granules|Collections)"
-                    },
                     {
                         "name_or_flags": "-f, --filter",
                         "dest": "filter",
@@ -25,11 +22,54 @@
                         "help": "select some fields from the requested data"
                     },
                     {
+                        "name_or_flags": "-o, --output",
+                        "dest": "output_format",
+                        "nargs": 1,
+                        "help": "chose output format",
+                        "choices": ["json", "table"],
+                        "default" : ["table"]
+                    }
+                ]
+            }
+        },
+        {
+            "prog": {
+                "name": "get_cumulus_records",
+                "flags": [
+                    {
+                        "name_or_flags": "-t, --type",
+                        "dest": "record_type",
+                        "required": true,
+                        "choices": ["collections", "granules", "providers", "rules"],
+                        "nargs": 1,
+                        "help": "Record type (Granule| Granules|Collections)"
+                    },
+                    {
+                        "name_or_flags": "-f, --filter",
+                        "dest": "filter",
+                        "nargs": "+",
+                        "help": "Filter the returned data (where x = y)"
+                    },
+                    {
+                        "name_or_flags": "-s, --select",
+                        "dest": "fields",
+                        "nargs": "+",
+                        "help": "Select some fields from the requested data"
+                    },
+                    {
                         "name_or_flags": "-l, --limit",
                         "dest": "limit",
                         "nargs": 1,
                         "default": [10],
                         "help": "Limit the requested data (default to 10)"
+                    },
+                    {
+                        "name_or_flags": "-c, --count",
+                        "dest": "count",
+                        "nargs": 1,
+                        "default": ["false"],
+                        "choices": ["true", "false"],
+                        "help": "Get ONLY the count of the result"
                     }
                 ]
             }
