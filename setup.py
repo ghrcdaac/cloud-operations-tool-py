@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 here = path.abspath(path.dirname(__file__))
 
-__version__ = import_module('pylot.version').__version__
+__version__ = "1.0.5"
 
 description = """
 Python cLoud Operations Tool (PyLOT) is a python command line tool designed to
