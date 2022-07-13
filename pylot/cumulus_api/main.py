@@ -3,9 +3,7 @@ import os
 from configparser import ConfigParser, SectionProxy
 from json.decoder import JSONDecodeError
 from typing import Union
-
 import requests
-
 from .cumulus_token import CumulusToken
 
 
@@ -749,8 +747,3 @@ class CumulusApi:
             data['bucket'] = bucket
         record_type = "deadLetterArchive/recoverCumulusMessages"
         return self.__crud_records(record_type=record_type, verb="post", data=data)
-
-
-if __name__ == "__main__":
-    cml = CumulusApi()
-    cll = cml.list_collections(limit=3)

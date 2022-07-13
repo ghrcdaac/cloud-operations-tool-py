@@ -34,7 +34,6 @@ This tool will prevent reinventing the wheel, since a solution for a common prob
        |___/
 ```
 
-
 ## 📖 Documentation
-
+- ❓[HowTo](https://ghrcdaac.github.io/cloud-operations-tool-py/howto)
 - Release note [v1.0.0](https://ghrcdaac.github.io/cloud-operations-tool-py/#v100).
