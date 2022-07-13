@@ -1,5 +1,7 @@
-from tabulate import tabulate
 from typing import Union
+
+from tabulate import tabulate
+
 from .helpers.pylot_helpers import PyLOTHelpers
 
 

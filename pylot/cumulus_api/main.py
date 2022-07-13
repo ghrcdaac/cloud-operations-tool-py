@@ -3,7 +3,9 @@ import os
 from configparser import ConfigParser, SectionProxy
 from json.decoder import JSONDecodeError
 from typing import Union
+
 import requests
+
 from .cumulus_token import CumulusToken
 
 
