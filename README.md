@@ -34,6 +34,20 @@ This tool will prevent reinventing the wheel, since a solution for a common prob
        |___/
 ```
 
+## Prerequisites
+Python 3.8+
+
+## Installation
+```jsunicoderegexp
+pip install git+https://github.com/ghrcdaac/cloud-operations-tool-py.git@main#egg=pylot
+```
+## Set up
+```bash
+Copy file
+https://github.com/ghrcdaac/cloud-operations-tool-py/blob/main/env.sh.example
+Define environment variable and source the file
+```
+
 ## 📖 Documentation
 - ❓[HowTo](https://ghrcdaac.github.io/cloud-operations-tool-py/howto)
-- Release note [v1.0.0](https://ghrcdaac.github.io/cloud-operations-tool-py/#v100).
+- 🚀 Release note [v1.0.0](https://ghrcdaac.github.io/cloud-operations-tool-py/#v100).

@@ -1,17 +1,5 @@
 # How To
-## Prerequisite 
-Python 3.8+
 
-## Installation 
-```jsunicoderegexp
-pip install git+https://github.com/ghrcdaac/cloud-operations-tool-py.git@main#egg=pylot
-```
-## Set up
-```bash
-Copy file 
-https://github.com/ghrcdaac/cloud-operations-tool-py/blob/main/env.sh.example
-Define environement variable and source the file
-```
 ## Basic usage
 ```
 pylot -h
