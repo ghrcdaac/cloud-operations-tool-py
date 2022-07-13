@@ -7,7 +7,7 @@ from typing import Dict
 
 from .options_factory import PyLOTOptionsFactory
 from .plugins import PyLOTHelpers
-from .plugins_loader import load_plogins
+from .plugins_loader import load_plugins
 
 PYLOT_FIGLET = pyfiglet.figlet_format("PyLOT")
 
@@ -50,7 +50,7 @@ class PyLOTClient():
             if arg.startswith(("-", "--")):
                 parser.add_argument(arg, nargs='+')
         parser.parse_args()
-        load_plogins(cls.options['plugins'])
+        load_plugins(cls.options['plugins'])
         pylot_options = {}
         for progs in cls.options['options']:
             pylot_options.update({progs['prog']['name']: PyLOTOptionsFactory.create(progs)}) 

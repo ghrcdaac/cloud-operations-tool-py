@@ -18,7 +18,7 @@ def import_module(name:str) ->  PluginInterface:
     return importlib.import_module(name) # type: ignore
 
 
-def load_plogins(plugins : List[str]) -> None:
+def load_plugins(plugins : List[str]) -> None:
     """Load plugins"""
     for plugin_name in plugins:
         plugin = import_module(plugin_name)
