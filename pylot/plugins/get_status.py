@@ -1,5 +1,5 @@
 from tabulate import tabulate
-
+from typing import Union
 from .helpers.pylot_helpers import PyLOTHelpers
 
 
@@ -7,7 +7,7 @@ class GetStatus:
     def __init__(self,parser) -> None:
         self.parser = parser
 
-    def get_status(self, argv):
+    def get_status(self, argv) -> Union[object, None]:
         if set(argv).isdisjoint(['-h', '--help']):
             cml = PyLOTHelpers().get_cumulus_api_instance()
         args = self.parser.parse_args(argv)
@@ -31,7 +31,7 @@ class GetStatus:
                                                                       for key in headers]])
 
         print(tabulate(tab_data, headers=["#", "name", "version"] + headers, tablefmt="fancy_grid"))
-        return
+        return None
 
 
 def initialize(init_program) -> None:

@@ -25,4 +25,3 @@ class GetStatusHelpers:
         bucket = s3_resource.Bucket(name=bucket_name)
         prefix = f"{prefix.rstrip('/')}/"
         return sum(1 for _ in bucket.objects.filter(Prefix=prefix).all())
-
