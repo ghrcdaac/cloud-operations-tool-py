@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Dict
 
 
 @dataclass
@@ -15,7 +15,7 @@ class PyLOTOptionsFactory():
 
 
     @classmethod
-    def create(cls, arguments: dict[str, Any]):
+    def create(cls, arguments: Dict[str, Any]):
         """
         Will accept arguments as follow
         {'prog' : {'name': '<name>', 'flags' : [<flags>]}}

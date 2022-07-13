@@ -3,6 +3,7 @@ import json
 import sys
 from dataclasses import field, dataclass
 import pyfiglet
+from typing import Dict
 
 from .options_factory import PyLOTOptionsFactory
 from .plugins import PyLOTHelpers
@@ -12,7 +13,7 @@ PYLOT_FIGLET = pyfiglet.figlet_format("PyLOT")
 
 @dataclass
 class PyLOTClient():
-    options: dict = field(default_factory=dict[str, str])
+    options: Dict = field(default_factory=Dict[str, str])
 
 
     @classmethod
