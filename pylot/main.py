@@ -1,7 +1,8 @@
 import argparse
 import json
 import sys
-from dataclasses import field, dataclass
+from dataclasses import dataclass, field
+
 import pyfiglet
 from typing import Dict
 
@@ -53,11 +54,13 @@ class PyLOTClient():
         load_plugins(cls.options['plugins'])
         pylot_options = {}
         for progs in cls.options['options']:
-            pylot_options.update({progs['prog']['name']: PyLOTOptionsFactory.create(progs)}) 
+            pylot_options.update({progs['prog']['name']: PyLOTOptionsFactory.create(progs)})
         if not unknown:
             unknown = ['-h']
+            print(PYLOT_FIGLET)
         result = getattr(pylot_options[args.option_to_use], args.option_to_use)(unknown)
-        print(json.dumps(result, indent=4))
+        if result:
+            print(json.dumps(result, indent=4))
 
 
 if __name__ == "__main__":

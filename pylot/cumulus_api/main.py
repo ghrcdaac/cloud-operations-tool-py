@@ -749,8 +749,3 @@ class CumulusApi:
             data['bucket'] = bucket
         record_type = "deadLetterArchive/recoverCumulusMessages"
         return self.__crud_records(record_type=record_type, verb="post", data=data)
-
-
-if __name__ == "__main__":
-    cml = CumulusApi()
-    cll = cml.list_collections(limit=3)
