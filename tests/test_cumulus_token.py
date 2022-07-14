@@ -23,10 +23,11 @@ class TestCumulusToken(unittest.TestCase):
 
         Yields a fake boto3 s3 resource
         """
-
         with mock_s3():
             mocked_s3_resource = boto3.resource("s3")
-            mocked_s3_resource.create_bucket(Bucket=self.bucket_name)
+            mocked_s3_resource.create_bucket(
+                Bucket=self.bucket_name, CreateBucketConfiguration={'LocationConstraint': 'us-west-2'}
+            )
             s3_client = boto3.client('s3')
             s3_client.upload_file(self.certificate_path, self.bucket_name, self.certificate_s3_key)
             yield mocked_s3_resource
