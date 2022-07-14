@@ -2,19 +2,20 @@ import argparse
 import json
 import sys
 from dataclasses import dataclass, field
+from typing import Dict
 
 import pyfiglet
 
 from .options_factory import PyLOTOptionsFactory
 from .plugins import PyLOTHelpers
-from .plugins_loader import load_plogins
+from .plugins_loader import load_plugins
 
 PYLOT_FIGLET = pyfiglet.figlet_format("PyLOT")
 
-@dataclass
-class PyLOTClient():
-    options: dict = field(default_factory=dict[str, str])
 
+@dataclass
+class PyLOTClient:
+    options: Dict = field(default_factory=Dict[str, str])
 
     @classmethod
     def get_supported_options(cls):
@@ -50,7 +51,7 @@ class PyLOTClient():
             if arg.startswith(("-", "--")):
                 parser.add_argument(arg, nargs='+')
         parser.parse_args()
-        load_plogins(cls.options['plugins'])
+        load_plugins(cls.options['plugins'])
         pylot_options = {}
         for progs in cls.options['options']:
             pylot_options.update({progs['prog']['name']: PyLOTOptionsFactory.create(progs)})

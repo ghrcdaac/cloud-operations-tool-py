@@ -1,12 +1,11 @@
 from typing import Union
-
 from tabulate import tabulate
 
 from .helpers.pylot_helpers import PyLOTHelpers
 
 
 class GetStatus:
-    def __init__(self,parser) -> None:
+    def __init__(self, parser) -> None:
         self.parser = parser
 
     def get_status(self, argv) -> Union[object, None]:

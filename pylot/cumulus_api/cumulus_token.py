@@ -39,7 +39,6 @@ class CumulusToken:
         obj = self.s3_resource.Object(bucket_name=bucket_name, key=prefix)
         return obj.get()['Body'].read()
 
-
     def __get_launchpad_certificate_body_s3(self, s3_certificate_path: str) -> bytes:
         """
         :param s3_certificate_path: S3 path of launchpad certificate
@@ -54,8 +53,6 @@ class CumulusToken:
         bucket_name, certificate_path = groups[1], groups[3]
 
         return self.get_s3_object_body(bucket_name=bucket_name, prefix=certificate_path)
-
-
 
     @staticmethod
     def __get_launchpad_certificate_body_file_system(certificate_path: str) -> bytes:
@@ -89,7 +86,6 @@ class CumulusToken:
         if secret_pass_phrase:
             return self.__get_launchpad_pass_phrase_secret_manager(secret_manager_id=secret_pass_phrase)
         return self.config.get('LAUNCHPAD_PASSPHRASE')
-
 
     def get_launchpad_certificate_body(self) -> bytes:
         """

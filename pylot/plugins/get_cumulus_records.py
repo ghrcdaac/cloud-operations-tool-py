@@ -1,9 +1,8 @@
-
 from .helpers.pylot_helpers import PyLOTHelpers
 
 
-class GetCumulusRecords():
-    def __init__(self,parser) -> None:
+class GetCumulusRecords:
+    def __init__(self, parser) -> None:
         self.parser = parser
 
     def get_cumulus_records(self, argv):

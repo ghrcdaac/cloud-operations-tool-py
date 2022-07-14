@@ -1,21 +1,19 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Dict
 
 
 @dataclass
-class PyLOTOptionsFactory():
-
+class PyLOTOptionsFactory:
     character_creation_instances: ClassVar[dict] = {}
 
     @classmethod
-    def register(cls, prog_name:str, creation_inst):
+    def register(cls, prog_name: str, creation_inst):
         """Create new instance"""
         cls.character_creation_instances[prog_name] = creation_inst
 
-
     @classmethod
-    def create(cls, arguments: dict[str, Any]):
+    def create(cls, arguments: Dict[str, Any]):
         """
         Will accept arguments as follow
         {'prog' : {'name': '<name>', 'flags' : [<flags>]}}
