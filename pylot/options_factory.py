@@ -4,15 +4,13 @@ from typing import Any, ClassVar, Dict
 
 
 @dataclass
-class PyLOTOptionsFactory():
-
+class PyLOTOptionsFactory:
     character_creation_instances: ClassVar[dict] = {}
 
     @classmethod
-    def register(cls, prog_name:str, creation_inst):
+    def register(cls, prog_name: str, creation_inst):
         """Create new instance"""
         cls.character_creation_instances[prog_name] = creation_inst
-
 
     @classmethod
     def create(cls, arguments: Dict[str, Any]):

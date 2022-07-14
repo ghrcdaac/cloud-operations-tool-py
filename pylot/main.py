@@ -12,10 +12,10 @@ from .plugins_loader import load_plugins
 
 PYLOT_FIGLET = pyfiglet.figlet_format("PyLOT")
 
-@dataclass
-class PyLOTClient():
-    options: Dict = field(default_factory=Dict[str, str])
 
+@dataclass
+class PyLOTClient:
+    options: Dict = field(default_factory=Dict[str, str])
 
     @classmethod
     def get_supported_options(cls):

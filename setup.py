@@ -1,6 +1,5 @@
 from os import path
 from codecs import open as codopen
-from importlib import import_module
 from setuptools import setup, find_packages
 
 
