@@ -2,9 +2,9 @@ import argparse
 import json
 import sys
 from dataclasses import dataclass, field
+from typing import Dict
 
 import pyfiglet
-from typing import Dict
 
 from .options_factory import PyLOTOptionsFactory
 from .plugins import PyLOTHelpers
