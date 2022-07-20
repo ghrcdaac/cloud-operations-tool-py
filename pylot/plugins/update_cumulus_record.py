@@ -9,7 +9,7 @@ class UpdateCumulusRecord:
         self.parser = parser
 
     def read_json_file(self, filename):
-        with open(filename, 'r') as file:
+        with open(filename, 'r', encoding='utf-8') as file:
             data = json.loads(file.read())
 
         return data
