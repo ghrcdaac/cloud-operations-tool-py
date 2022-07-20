@@ -2,7 +2,7 @@
   "plugins": [
     "pylot.plugins.get_cumulus_records",
     "pylot.plugins.get_status",
-    "pylot.plugins.update_cumulus_record"
+    "pylot.plugins.manage_cumulus_records"
   ],
   "options": [
     {
@@ -122,6 +122,48 @@
     {
       "prog": {
         "name": "update_granule",
+        "flags": [
+          {
+            "name_or_flags": "-d, --data",
+            "dest": "granule_data",
+            "required": true,
+            "nargs": 1,
+            "help": "JSON file containing granule definition"
+          }
+        ]
+      }
+    },
+    {
+      "prog": {
+        "name": "create_provider",
+        "flags": [
+          {
+            "name_or_flags": "-d, --data",
+            "dest": "provider_data",
+            "required": true,
+            "nargs": 1,
+            "help": "JSON file containing provider definition"
+          }
+        ]
+      }
+    },
+    {
+      "prog": {
+        "name": "create_collection",
+        "flags": [
+          {
+            "name_or_flags": "-d, --data",
+            "dest": "collection_data",
+            "required": true,
+            "nargs": 1,
+            "help": "JSON file containing collection definition"
+          }
+        ]
+      }
+    },
+    {
+      "prog": {
+        "name": "create_granule",
         "flags": [
           {
             "name_or_flags": "-d, --data",
