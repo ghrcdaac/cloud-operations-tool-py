@@ -20,7 +20,7 @@ class PyLOTClient:
     @classmethod
     def get_supported_options(cls):
         cls.options = PyLOTHelpers.get_config_options()
-        supported_options : list[str] = []
+        supported_options: list[str] = []
         for progs in cls.options['options']:
             supported_options.append(progs['prog']['name'])
         return supported_options
@@ -41,7 +41,6 @@ class PyLOTClient:
         supported_options = cls.get_supported_options()
         if not set(argv).isdisjoint(supported_options):
             _ = [argv.remove(ele) for ele in ['-h', '--help'] if ele in argv]
-
         parser = argparse.ArgumentParser(description='Python cLoud operations Tool (PyLOT)', prog='pylot')
         parser.add_argument('option_to_use', choices=supported_options)
         args, unknown = parser.parse_known_args()
