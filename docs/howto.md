@@ -78,3 +78,37 @@ pylot get_status -f name=nalmaraw version=1
 ╘═════╧══════════╧═══════════╧═════════════╧═══════════╧══════════╧══════════╧═════════╛
 ```
 
+
+### Basic usage for modifying Cumulus records (collections, providers, granules)
+The syntax is identical for each operation. 
+```shell
+$ pylot update_provider -h
+ ____        _     ___ _____ 
+|  _ \ _   _| |   / _ \_   _|
+| |_) | | | | |  | | | || |  
+|  __/| |_| | |__| |_| || |  
+|_|    \__, |_____\___/ |_|  
+       |___/                 
+
+usage: update_provider [-h] -d, PROVIDER_DATA
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, PROVIDER_DATA, --data PROVIDER_DATA
+                        JSON file containing provider definition
+```
+```create_<record_type>``` or ```update_<record_type>``` only take one argument ```-d/--data``` which is the name of
+a json file containing a newly defined record or fields to be modified in an existing record. Collection and
+ provider definitions will replace the entire existing definition while updating a granule will only update
+updated fields. 
+
+```shell
+$ pylot update_granule -d granule.json 
+{
+    "message": "Successfully updated granule with Granule Id: f16_20220123v7.gz, Collection Id: rssmif16d___7"
+}
+```
+
+
+
+
