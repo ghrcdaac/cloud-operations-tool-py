@@ -2,7 +2,8 @@
   "plugins": [
     "pylot.plugins.get_cumulus_records",
     "pylot.plugins.get_status",
-    "pylot.plugins.manage_cumulus_records"
+    "pylot.plugins.manage_cumulus_records",
+    "pylot.plugins.bulk_create_collections"
   ],
   "options": [
     {
@@ -173,6 +174,20 @@
             "help": "JSON file containing granule definition"
           }
         ]
+      }
+    },
+    {
+      "prog": {
+      "name": "bulk_create_collections",
+      "flags": [
+        {
+          "name_or_flags": "-p, --path",
+          "dest": "path",
+          "nargs": "+",
+          "help": "input file name path to create collections from",
+          "required": true
+        }
+      ]
       }
     }
   ]
