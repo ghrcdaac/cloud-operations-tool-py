@@ -74,6 +74,18 @@ class ManageCumulusRecords:
 
         return response
 
+    def remove_cmr(self, argv) -> Union[object, None]:
+        if set(argv).isdisjoint(['-h', '--help']):
+            cml = PyLOTHelpers().get_cumulus_api_instance()
+
+        args = self.parser.parse_args(argv)
+        response = cml.remove_granule_from_cmr(args.granule_id)
+
+        return response
+
+    def initialize(init_program) -> None:
+        init_program.register('remove_cmr', ManageCumulusRecords)
+
 
 def initialize(init_program) -> None:
     init_program.register('create_collection', ManageCumulusRecords)
@@ -82,3 +94,4 @@ def initialize(init_program) -> None:
     init_program.register('update_collection', ManageCumulusRecords)
     init_program.register('update_provider', ManageCumulusRecords)
     init_program.register('update_granule', ManageCumulusRecords)
+    init_program.register('remove_cmr', ManageCumulusRecords)
