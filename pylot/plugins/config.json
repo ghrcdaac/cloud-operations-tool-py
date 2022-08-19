@@ -73,7 +73,7 @@
             "default": [
               10
             ],
-            "help": "Limit the requested data (default to 10)"
+            "help": "Limit the requested data (default to 10). If 0 is provided with an OpenSearch query an attempt will be made to return all available results. This could take a while."
           },
           {
             "name_or_flags": "-c, --count",
@@ -87,6 +87,13 @@
               "false"
             ],
             "help": "Get ONLY the count of the result"
+          },
+          {
+            "name_or_flags": "-d, --data",
+            "dest": "query_data",
+            "required": false,
+            "nargs": 1,
+            "help": "JSON file containing an OpenSearch query"
           }
         ]
       }

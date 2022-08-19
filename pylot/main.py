@@ -45,7 +45,6 @@ class PyLOTClient:
         parser.add_argument('option_to_use', choices=supported_options)
         args, unknown = parser.parse_known_args()
 
-        # parser.add_argument('-extra', '--extra', dest='extra', default=unknown, help='Arguments to sub command')
         for arg in unknown:
             if arg.startswith(("-", "--")):
                 parser.add_argument(arg, nargs='+')
