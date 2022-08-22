@@ -30,7 +30,7 @@ class GetCumulusRecords:
 
         lambda_arn = os.getenv('OPENSEARCH_LAMBDA_ARN')
         if not lambda_arn and args.query_data[0]:
-            raise Exception(f'The ARN for the OpenSearch lambda is not defined. Provide it as an environment variable.')
+            raise Exception('The ARN for the OpenSearch lambda is not defined. Provide it as an environment variable.')
 
         if lambda_arn and args.query_data:
             data = self.read_json_file(args.query_data[0])
@@ -41,7 +41,7 @@ class GetCumulusRecords:
                 'record_type': str(args.record_type[0]).rstrip('s'),
                 'limit': None if args.limit[0] == 0 else args.limit[0]
             }
-            print(f'Invoking OpenSearch lambda...')
+            print('Invoking OpenSearch lambda...')
             client = boto3.client('lambda')
             rsp = client.invoke(
                 FunctionName=lambda_arn,
@@ -61,7 +61,7 @@ class GetCumulusRecords:
                 Key=ret_dict.get('key')
             )
 
-            with open('query_results.json', 'w+') as json_file:
+            with open('query_results.json', 'w+', encoding='utf-8') as json_file:
                 json.dump(rsp.get('Body').read().decode('utf-8'), fp=json_file, indent=2)
 
             ret = f'Query results: {os.getcwd()}/query_results.json'
