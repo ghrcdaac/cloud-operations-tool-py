@@ -52,7 +52,7 @@ class GetCumulusRecords:
                                 f'{os.getenv("OPENSEARCH_LAMBDA_ARN")}')
 
             # Download results from S3
-            print('Downloding query results...')
+            print('Downloading query results...')
             temp = rsp.get('Payload').read().decode('utf-8')
             ret_dict = json.loads(temp)
             s3_client = boto3.client('s3')
