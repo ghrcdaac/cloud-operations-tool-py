@@ -46,8 +46,6 @@ class SortingHelpFormatter(argparse.HelpFormatter):
 
 
 def main():
-    # Collect all modules
-
     # Extract module methods
     args_t = defaultdict(set)
     for member_function in getmembers(CumulusApi, is_action_function):
@@ -74,16 +72,6 @@ def main():
         # group = subparser.('valid target')
         # t = str(sorted(list(options))).replace("'", '')
         subparser.add_argument(command, nargs='?', choices=t, help=f'{t}', metavar='')
-
-
-    # Fetch plugin parsers
-    # add_args(subparsers)
-    subparser = subparsers.add_parser('query', prog='query', help='[open_search]', description='Description')
-    subparser.add_argument('query', nargs='?', choices=['open_search'], help=f'open_search: THis is some text',
-                           metavar='')
-    # subparsers_2 = parser.add_subparsers()
-    # subparsers_2.add_parser(parser_class=return_parser())
-
 
     args, unknown = parser.parse_known_args()
     # print(vars(args))
