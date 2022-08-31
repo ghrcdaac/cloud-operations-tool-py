@@ -1,5 +1,4 @@
 import argparse
-import inspect
 import json
 import sys
 from collections import defaultdict
@@ -10,12 +9,6 @@ import test_plugins
 
 from pylot.plugins import PyLOTHelpers
 from pylot.cumulus_api import CumulusApi
-
-
-class CumulusPyCLI:
-    def __init__(self):
-        self.cml = PyLOTHelpers().get_cumulus_api_instance()
-        pass
 
 
 def is_action_function(value):
@@ -81,11 +74,6 @@ def main():
 
     args, unknown = parser.parse_known_args()
 
-    clsmembers = inspect.getmembers(test_plugins.__all__[-1], inspect.isclass)
-    print(f'cls: {test_plugins.__all__}')
-    print(f'-1: {test_plugins.__all__[-1]}')
-    temp = test_plugins.opensearch.OpenSearch()
-
     # Processed unknown arguments are keyword arguments to be passed to the request
     keyword_args = {}
     for argument in unknown:
@@ -101,30 +89,17 @@ def main():
             record_type = v
             try:
                 funct = getattr(cml, f'{action}_{record_type}')
-                # print(f'var_names: {dir(funct)}')
-                # print(f'members: {inspect.getmembers(funct).__doc__}')
-                # print(f'members: {funct.__doc__}')
-
-                # print(f'var_names: {inspect.getfullargspec(funct).args}')
-
                 res = funct(**keyword_args)
                 print(json.dumps(res, indent=2))
             except AttributeError as e:
                 raise ValueError(f'"{action} {record_type}" is an invalid command. Verify options with "{action} -h".')
     else:
-        print('elsing')
-        t = f'test_plugins.{sys.argv[1]}.main({sys.argv[1]}.py, {args})'
         print(getattr(eval(f'test_plugins.{sys.argv[1]}'), 'main')(args, **keyword_args))
-        # eval(t)
 
     return 0
 
 
 if __name__ == '__main__':
     main()
-    # a = ['a', 'b', 'c']
-    # i = a.index('b')
-    # print(i)
-    # a[a.index()]
     pass
 
