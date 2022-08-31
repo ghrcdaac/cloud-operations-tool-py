@@ -63,12 +63,12 @@ class CumulusApi:
     def get_generic_records(self, record_type, **kwargs):
         """
 
-        :param record_type:
-        :type record_type:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
+        :param record_type: hello
+        :type record_type:a
+        :param kwargs:g
+        :type kwargs:g
+        :return:h
+        :rtype:h
         """
         return self.__crud_records(record_type=record_type, verb='get', **kwargs)
 
@@ -327,6 +327,9 @@ class CumulusApi:
     def bulk_delete(self, data):
         """
         Bulk delete the provided granules
+        :param data: format: https://nasa.github.io/cumulus-api/#bulk-delete
+        {forceRemoveFromCmr: true/false,
+        }
         :return: Request response
         """
         record_type = "granules/bulkDelete"
