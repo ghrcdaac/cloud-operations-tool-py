@@ -57,28 +57,11 @@ class OpenSearch:
 
 
 def return_parser(subparsers):
-    # print('returning aopensearch parser')
-    subparser = subparsers.add_parser('aopensearch')
+    subparser = subparsers.add_parser('opensearch', help='This help text describes the aOpenSearch plugin',
+                                      description='Descri')
     subparser.add_argument('-d', '--data', nargs='?', help='json file', metavar='')
 
-    subparser = subparsers.add_parser('aopensearch', help='help_text', description='Descri')
-    subparser.add_argument('opensearch arg', nargs='?', choices='choices', help=f'arg help', metavar='')
 
-def a_test():
+def main(args):
+    print(f'aopensearch_main: {args}')
     return 'success'
-
-def add_args(subparsers):
-    # parser = argparse.ArgumentParser(prog='prog_a', description='Command line interface for OpenSearch.',
-    #                                  usage=argparse.SUPPRESS)
-    # parser.add_argument('query', choices=['opensearch'])
-    # parser.add_argument('query', nargs='?', choices=['opensearch'], help='temp help', metavar='')
-
-    # subparsers = parser.add_subparsers()
-    subparser = subparsers.add_parser('opensearch')
-    subparser.add_argument('-d', '--data', nargs='?', help='json file', metavar='')
-    # parser.add_argument('query', nargs='?', choices=['opensearch'], help='temp help', metavar='')
-
-    # subparser = subparsers.add_parser('query', help=f'[opensearch]')
-    # subparser.add_argument('-d', '--d', nargs='?', help='json file')
-
-    # return parser
