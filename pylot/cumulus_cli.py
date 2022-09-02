@@ -14,7 +14,6 @@ plugin_filter = [
 
 def import_plugins():
     plugin_dir = f'{str(__file__).rsplit("/", maxsplit=1)[0]}/test_plugins'
-    print(f'where: {plugin_dir}')
     for file in os.listdir(plugin_dir):
         if not file.startswith('_') and file not in plugin_filter:
             ret = importlib.import_module(f'pylot.test_plugins.{file}.{file}')
@@ -33,7 +32,6 @@ def main():
     # load plugin parsers
     subparsers = parser.add_subparsers()
     for name, module in plugins.items():
-        # print(f'adding parser for: {x}')
         try:
             module.return_parser(subparsers)
         except AttributeError:
@@ -44,8 +42,6 @@ def main():
     # Processed unknown arguments are keyword arguments to be passed to the request
     keyword_args = {}
     for argument in unknown:
-        print(argument)
-        print(argument.split('=', maxsplit=1))
         params = argument.split('=', maxsplit=1)
         variable = params[0]
         value = params[1]
@@ -57,7 +53,6 @@ def main():
             pass
 
         keyword_args.update({variable: value})
-        print(f'kw: {keyword_args}')
 
     # Call plugin's main
     try:

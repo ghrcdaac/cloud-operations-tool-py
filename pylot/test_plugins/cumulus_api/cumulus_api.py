@@ -7,15 +7,12 @@ from pylot import CumulusApi
 from pylot.test_plugins.helpers.pylot_helpers import PyLOTHelpers
 
 
-base_url = 'https://nasa.github.io/cumulus-api/#'
-
 def is_action_function(value):
     ret = True
     if not isfunction(value):
         ret = False
     else:
         function_name = str(value).split('.')[-1]
-        # print(f'function_name: {function_name}')
         if function_name.startswith('_'):
             ret = False
 
@@ -55,8 +52,6 @@ def return_parser(subparsers):
 
 
 def main(args, **kwargs):
-    print(args)
-    print(kwargs)
     cml = PyLOTHelpers().get_cumulus_api_instance()
     for command, target in vars(args).items():
         res = getattr(cml, f'{command}_{target}')(**kwargs)
