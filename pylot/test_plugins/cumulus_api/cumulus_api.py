@@ -3,8 +3,8 @@ from argparse import SUPPRESS, RawTextHelpFormatter
 from collections import defaultdict
 from inspect import getmembers, isfunction
 
-from pylot import CumulusApi
-from pylot.test_plugins.helpers.pylot_helpers import PyLOTHelpers
+from .main import CumulusApi
+from ..helpers.pylot_helpers import PyLOTHelpers
 
 
 def is_action_function(value):

@@ -13,7 +13,7 @@ plugin_filter = [
 
 
 def import_plugins():
-    plugin_dir = f'{str(__file__).rsplit("/", maxsplit=1)[0]}/test_plugins'
+    plugin_dir = f'{os.path.abspath(os.path.dirname(__file__))}/test_plugins'
     for file in os.listdir(plugin_dir):
         if not file.startswith('_') and file not in plugin_filter:
             ret = importlib.import_module(f'pylot.test_plugins.{file}.{file}')
