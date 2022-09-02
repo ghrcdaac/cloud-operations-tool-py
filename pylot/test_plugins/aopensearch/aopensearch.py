@@ -57,7 +57,7 @@ class OpenSearch:
 
 
 def return_parser(subparsers):
-    subparser = subparsers.add_parser('opensearch', help='This help text describes the aOpenSearch plugin',
+    subparser = subparsers.add_parser('aopensearch', help='This help text describes the aOpenSearch plugin',
                                       description='Descri')
     subparser.add_argument('-d', '--data', nargs='?', help='json file', metavar='')
 
