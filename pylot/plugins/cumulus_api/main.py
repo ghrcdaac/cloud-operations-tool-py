@@ -63,12 +63,12 @@ class CumulusApi:
     def get_generic_records(self, record_type, **kwargs):
         """
 
-        :param record_type: hello
-        :type record_type:a
-        :param kwargs:g
-        :type kwargs:g
-        :return:h
-        :rtype:h
+        :param record_type:
+        :type record_type:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
         """
         return self.__crud_records(record_type=record_type, verb='get', **kwargs)
 
