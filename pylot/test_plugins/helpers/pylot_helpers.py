@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from tempfile import mkdtemp
 
-from pylot.cumulus_api import CumulusApi
+from ..cumulus_api.main import CumulusApi
 
 
 @dataclass

@@ -6,22 +6,22 @@ import sys
 from json import JSONDecodeError
 
 
-plugins = {}
-plugin_filter = [
-    'helpers'
-]
-
-
 def import_plugins():
+    plugin_filter = [
+        'helpers'
+    ]
+    plugins = {}
     plugin_dir = f'{os.path.abspath(os.path.dirname(__file__))}/test_plugins'
     for file in os.listdir(plugin_dir):
         if not file.startswith('_') and file not in plugin_filter:
             ret = importlib.import_module(f'pylot.test_plugins.{file}.{file}')
             plugins[file] = ret
 
+    return plugins
+
 
 def main():
-    import_plugins()
+    plugins = import_plugins()
 
     # Create argparser
     parser = argparse.ArgumentParser(

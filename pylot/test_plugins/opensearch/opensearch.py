@@ -56,9 +56,14 @@ class OpenSearch:
 
 
 def return_parser(subparsers):
-    subparser = subparsers.add_parser('opensearch', help='This help text describes the OpenSearch plugin',
-                                      description='Descri')
-    subparser.add_argument('-d', '--data', nargs='?', help='json file', metavar='')
+    subparser = subparsers.add_parser('opensearch',
+                                      help='This plugin is used to submit queries directly to OpenSearch '
+                                           'bypassing the cumulus API.',
+                                      description='Submit queries to opensearch')
+    subparser.add_argument('-d', '--data',  help='The name of a file containing a json query',
+                           metavar='<filename>.json',
+                           default='query.json',
+                           required=True)
 
 
 def main(args):

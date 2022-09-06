@@ -27,7 +27,7 @@ def return_parser(subparsers):
 
     parser = subparsers.add_parser(
         'cumulus_api',
-        help='This Describes the cumulus api',
+        help='This plugin provides a commandline interface to the cumulus api endpoints.',
         description='Provides commandline access to the cumulus api. To see available arguments '
                     'check the cumulus documentation here: https://nasa.github.io/cumulus-api/#cumulus-api\n'
                     'Every argument is a positional argument with a string value so it can just be supplied after the '
