@@ -12,7 +12,7 @@ def is_action_function(value):
     if not isfunction(value):
         ret = False
     else:
-        function_name = str(value).rsplit('.')[-1]
+        function_name = str(value).rsplit('.', maxsplit=1)[-1]
         if function_name.startswith('_'):
             ret = False
 
