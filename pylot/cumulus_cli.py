@@ -26,7 +26,7 @@ def main():
     # Create argparser
     parser = argparse.ArgumentParser(
         # prog='prog',
-        usage=f'<positional_argument> -h to access help for each plugin. \n',
+        usage='<positional_argument> -h to access help for each plugin. \n',
         description='PyLOT command line utility.')
 
     # load plugin parsers

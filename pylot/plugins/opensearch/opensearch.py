@@ -15,8 +15,7 @@ class OpenSearch:
 
         return data
 
-    def query_opensearch(self, query_data, record_type, limit=100, *args, **kwargs):
-        # print(f'doing: {self.__name__}')
+    def query_opensearch(self, query_data, record_type, limit=100):
         lambda_arn = os.getenv('OPENSEARCH_LAMBDA_ARN')
         if not lambda_arn:
             raise Exception('The ARN for the OpenSearch lambda is not defined. Provide it as an environment variable.')
