@@ -5,7 +5,7 @@ import boto3
 import pytest
 from moto import mock_s3, mock_secretsmanager
 
-from pylot.test_plugins.cumulus_api.cumulus_token import CumulusToken
+from pylot.plugins.cumulus_api.cumulus_token import CumulusToken
 
 
 class TestCumulusToken(unittest.TestCase):

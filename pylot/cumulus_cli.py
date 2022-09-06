@@ -11,10 +11,10 @@ def import_plugins():
         'helpers'
     ]
     plugins = {}
-    plugin_dir = f'{os.path.abspath(os.path.dirname(__file__))}/test_plugins'
+    plugin_dir = f'{os.path.abspath(os.path.dirname(__file__))}/plugins'
     for file in os.listdir(plugin_dir):
         if not file.startswith('_') and file not in plugin_filter:
-            ret = importlib.import_module(f'pylot.test_plugins.{file}.{file}')
+            ret = importlib.import_module(f'pylot.plugins.{file}.{file}')
             plugins[file] = ret
 
     return plugins
