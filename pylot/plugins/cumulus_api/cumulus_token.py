@@ -11,9 +11,8 @@ from cryptography.hazmat.primitives.serialization import (Encoding,
                                                           PrivateFormat)
 from cryptography.hazmat.primitives.serialization.pkcs12 import \
     load_key_and_certificates
-from requests_toolbelt.adapters.x509 import X509Adapter
-
 from .aws_services import AWS_Services
+from requests_toolbelt.adapters.x509 import X509Adapter
 
 
 class CumulusToken:

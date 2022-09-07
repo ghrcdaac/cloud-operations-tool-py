@@ -22,7 +22,7 @@ install_requires = [x.strip() for x in all_reqs]
 setup(
     name='cloud_operations_tool',
     version=__version__,
-    author='Abdelhak Marouane (am0089@uah.edu)',
+    author='Abdelhak Marouane (am0089@uah.edu), Michael Hall (mlh0079@uah.edu)',
     description=description,
     url='https://github.com/ghrcdaac/cloud-operations-tool-py',
     license='Apache 2.0',
@@ -35,7 +35,7 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
     entry_points={
-        'console_scripts': ['pylot=pylot.main:PyLOTClient.cli']
+        'console_scripts': ['pylot=pylot.cumulus_cli:main']
     },
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,

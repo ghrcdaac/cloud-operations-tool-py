@@ -327,6 +327,9 @@ class CumulusApi:
     def bulk_delete(self, data):
         """
         Bulk delete the provided granules
+        :param data: format: https://nasa.github.io/cumulus-api/#bulk-delete
+        {forceRemoveFromCmr: true/false,
+        }
         :return: Request response
         """
         record_type = "granules/bulkDelete"
