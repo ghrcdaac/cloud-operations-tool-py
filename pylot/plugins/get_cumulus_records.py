@@ -29,7 +29,7 @@ class GetCumulusRecords:
             kwargs['fields'] = ','.join(args.fields)
 
         lambda_arn = os.getenv('OPENSEARCH_LAMBDA_ARN')
-        if not lambda_arn and args.query_data[0]:
+        if lambda_arn and args.query_data[0]:
             raise Exception('The ARN for the OpenSearch lambda is not defined. Provide it as an environment variable.')
 
         if lambda_arn and args.query_data:
