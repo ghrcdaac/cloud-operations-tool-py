@@ -13,15 +13,15 @@ def return_parser(subparsers):
         usage=SUPPRESS,
         formatter_class=RawTextHelpFormatter
     )
-    parser.add_argument('verb', choices=['get', 'put', 'post', 'delete'], metavar=f'verb: [get, post, put, delete]')
+    parser.add_argument('verb', choices=['get', 'put', 'post', 'delete'], metavar='verb: [get, post, put, delete]')
     parser.add_argument(
         dest='record_type',
         metavar='record_type: The endpoint to submit the request to. View the documentation to '
                 'determine which endpoint pairs with each verb.\n\n'
                 'Examples: \n'
-                f' - pylot cumulus_api get /granules (https://nasa.github.io/cumulus-api/#list-granules)\n'
-                f' - pylot cumulus_api put /collections/{{name}}/{{version}} '
-                f'(https://nasa.github.io/cumulus-api/#updatereplace-collection)'
+                ' - pylot cumulus_api get /granules (https://nasa.github.io/cumulus-api/#list-granules)\n'
+                ' - pylot cumulus_api put /collections/{{name}}/{{version}} '
+                '(https://nasa.github.io/cumulus-api/#updatereplace-collection)'
         )
 
 
