@@ -38,7 +38,8 @@ def return_parser(subparsers):
                     ' - update granule data=\'{"collectionId": "nalmaraw___1", "granuleId": '
                     '"LA_NALMA_firetower_220706_063000.dat", "status": "completed"}\'',
         usage=SUPPRESS,
-        formatter_class=RawTextHelpFormatter)
+        formatter_class=RawTextHelpFormatter
+    )
     subparsers_cli = parser.add_subparsers()
     for command, options in args_t.items():
         sorted_options = str(sorted(list(options))).replace("'", '')
@@ -51,10 +52,14 @@ def return_parser(subparsers):
         subparser.add_argument(command, nargs='?', choices=sorted_options, help=f'{sorted_options}', metavar='')
 
 
-def main(args, **kwargs):
+def main(**kwargs):
     cml = PyLOTHelpers().get_cumulus_api_instance()
-    for command, target in vars(args).items():
-        res = getattr(cml, f'{command}_{target}')(**kwargs)
-
+    command = list(kwargs)[0]
+    target = kwargs.pop(command)
+    res = getattr(cml, f'{command}_{target}')(**kwargs)
+    res = res.get('results')
+    if len(res) == 1:
+        res = res.pop()
     print(json.dumps(res, indent=2, sort_keys=True))
-    return 'success'
+
+    return 0
