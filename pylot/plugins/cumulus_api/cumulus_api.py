@@ -56,10 +56,23 @@ def main(**kwargs):
     cml = PyLOTHelpers().get_cumulus_api_instance()
     command = list(kwargs)[0]
     target = kwargs.pop(command)
-    res = getattr(cml, f'{command}_{target}')(**kwargs)
-    res = res.get('results')
-    if len(res) == 1:
-        res = res.pop()
-    print(json.dumps(res, indent=2, sort_keys=True))
+
+    results = []
+    while True:
+        response = getattr(cml, f'{command}_{target}')(**kwargs)
+        search_context = response.get('meta', {}).get('searchContext')
+        results += response.get('results', [])
+        count = response.get("meta", {}).get("count")
+        if search_context:
+            print(f'Retrieved {len(results)} out of {count} results...')
+            kwargs.update({'searchContext': search_context})
+        else:
+            # If there is no searchContext we have all of the results
+            break
+
+    if len(results) == 1:
+        results = results.pop()
+
+    print(json.dumps(results, indent=2, sort_keys=True))
 
     return 0
