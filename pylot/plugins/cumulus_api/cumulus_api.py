@@ -38,7 +38,8 @@ def return_parser(subparsers):
                     ' - update granule data=\'{"collectionId": "nalmaraw___1", "granuleId": '
                     '"LA_NALMA_firetower_220706_063000.dat", "status": "completed"}\'',
         usage=SUPPRESS,
-        formatter_class=RawTextHelpFormatter)
+        formatter_class=RawTextHelpFormatter
+    )
     subparsers_cli = parser.add_subparsers()
     for command, options in args_t.items():
         sorted_options = str(sorted(list(options))).replace("'", '')
@@ -51,10 +52,27 @@ def return_parser(subparsers):
         subparser.add_argument(command, nargs='?', choices=sorted_options, help=f'{sorted_options}', metavar='')
 
 
-def main(args, **kwargs):
+def main(**kwargs):
     cml = PyLOTHelpers().get_cumulus_api_instance()
-    for command, target in vars(args).items():
-        res = getattr(cml, f'{command}_{target}')(**kwargs)
+    command = list(kwargs)[0]
+    target = kwargs.pop(command)
 
-    print(json.dumps(res, indent=2, sort_keys=True))
-    return 'success'
+    results = []
+    while True:
+        response = getattr(cml, f'{command}_{target}')(**kwargs)
+        search_context = response.get('meta', {}).get('searchContext')
+        results += response.get('results', [])
+        count = response.get("meta", {}).get("count")
+        if search_context:
+            print(f'Retrieved {len(results)} out of {count} results...')
+            kwargs.update({'searchContext': search_context})
+        else:
+            # If there is no searchContext we have all of the results
+            break
+
+    if len(results) == 1:
+        results = results.pop()
+
+    print(json.dumps(results, indent=2, sort_keys=True))
+
+    return 0
