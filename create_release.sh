@@ -15,12 +15,10 @@ export RELEASE_NAME=`basename $GITHUB_REPO`
 
 ## Build TF modules that require source building
 function create_zip_file() {
-
   BUILD_DIR=/tmp/${RELEASE_NAME}
   DESTINATION_DIR=${PWD}/dist
   rm -rf ${DESTINATION_DIR}
   mkdir -p ${BUILD_DIR} ${DESTINATION_DIR}
-  cp -r modules ${BUILD_DIR}
   cp package.zip ${BUILD_DIR}
   cp *tf ${BUILD_DIR}
   cd ${BUILD_DIR}
