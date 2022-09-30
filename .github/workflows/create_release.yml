@@ -3,10 +3,13 @@ on:
   pull_request:
   push:
     tags:
+      - v*
+    branches:
+      - main
 
 jobs:
   create_release:
-    if: contains(github.ref, '/tags/')
+    if: contains(github.ref, '/tags/v')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,6 +28,9 @@ jobs:
             python-version: ${{ matrix.python-version }}
         - name: Build a release
           run: |
-            echo "Hello world"
+            python --version
+            bash create_release.sh $SOURCE_TAG
           env:
+            SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
+            SECRET_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             GITHUB_REPO: ${{ steps.repo_name.outputs.REPOSITORY_NAME }}
