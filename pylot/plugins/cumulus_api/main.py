@@ -704,21 +704,21 @@ class CumulusApi:
 
     # ============== ORCA ===============
 
-    def list_orca_recovery_status(self, **kwargs):
-        """
-        List ORCA recovery request status.
-        :return: Request response
-        """
-        record_type = "orca/recovery"
-        return self.__crud_records(record_type=record_type, verb="get", **kwargs)
-
-    def post_orca(self, **kwargs):
-        """
-        List ORCA recovery request status.
-        :return: Request response
-        """
-        record_type = "orca"
-        return self.__crud_records(record_type=record_type, verb="post", **kwargs)
+    # def list_orca_recovery_status(self, **kwargs):
+    #     """
+    #     List ORCA recovery request status.
+    #     :return: Request response
+    #     """
+    #     record_type = "orca/recovery"
+    #     return self.__crud_records(record_type=record_type, verb="get", **kwargs)
+    #
+    # def post_orca(self, **kwargs):
+    #     """
+    #     List ORCA recovery request status.
+    #     :return: Request response
+    #     """
+    #     record_type = "orca"
+    #     return self.__crud_records(record_type=record_type, verb="post", **kwargs)
 
     # ============== Migration Counts ===============
 
