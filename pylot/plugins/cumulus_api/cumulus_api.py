@@ -60,18 +60,19 @@ def main(**kwargs):
     results = []
     while True:
         response = getattr(cml, f'{command}_{target}')(**kwargs)
+        # print(f'response: {response}')
         search_context = response.get('meta', {}).get('searchContext')
-        results += response.get('results', [])
-        count = response.get("meta", {}).get("count")
         if search_context:
+            count = response.get("meta", {}).get("count")
+            results += response.get('results', [])
             print(f'Retrieved {len(results)} out of {count} results...')
             kwargs.update({'searchContext': search_context})
+            if len(results) >= kwargs.get('limit') or len(results) >= count:
+                break
         else:
             # If there is no searchContext we have all of the results
+            results = response
             break
-
-    if len(results) == 1:
-        results = results.pop()
 
     print(json.dumps(results, indent=2, sort_keys=True))
 

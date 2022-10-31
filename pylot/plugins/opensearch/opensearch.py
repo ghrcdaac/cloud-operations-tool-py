@@ -20,9 +20,10 @@ class OpenSearch:
 
         # Invoke OpenSearch lambda
         payload = {
-            'query': query_data,
-            'record_type': str(record_type).rstrip('s'),
-            'limit': limit
+            'config': {
+                'query': query_data,
+                'record_type': str(record_type).rstrip('s'),
+                'size': int(limit)}
         }
 
         print('Invoking OpenSearch lambda...')
@@ -40,6 +41,7 @@ class OpenSearch:
         print('Downloading query results...')
         temp = rsp.get('Payload').read().decode('utf-8')
         ret_dict = json.loads(temp)
+        print(f'ret_dict: {ret_dict}')
         s3_client = boto3.client('s3')
         rsp = s3_client.get_object(
             Bucket=ret_dict.get('bucket'),
