@@ -61,7 +61,13 @@ def main(**kwargs):
     while True:
         response = getattr(cml, f'{command}_{target}')(**kwargs)
         # print(f'response: {response}')
-        search_context = response.get('meta', {}).get('searchContext')
+
+        try:
+            search_context = response.get('meta', {}).get('searchContext')
+        except AttributeError:
+            search_context = None
+            pass
+
         if search_context:
             count = response.get("meta", {}).get("count")
             results += response.get('results', [])
