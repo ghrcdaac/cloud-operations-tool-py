@@ -60,18 +60,6 @@ class CumulusApi:
             logging.error("Cumulus CRUD: %s", err)
             return re.content
 
-    def get_generic_records(self, record_type, **kwargs):
-        """
-
-        :param record_type:
-        :type record_type:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
-        """
-        return self.__crud_records(record_type=record_type, verb='get', **kwargs)
-
     # ============== Version ===============
     def get_version(self):
         """
@@ -723,6 +711,14 @@ class CumulusApi:
         """
         record_type = "orca/recovery"
         return self.__crud_records(record_type=record_type, verb="get", **kwargs)
+
+    def post_orca(self, **kwargs):
+        """
+        List ORCA recovery request status.
+        :return: Request response
+        """
+        record_type = "orca"
+        return self.__crud_records(record_type=record_type, verb="post", **kwargs)
 
     # ============== Migration Counts ===============
 
