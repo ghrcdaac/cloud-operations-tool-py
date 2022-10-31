@@ -67,7 +67,7 @@ def main(**kwargs):
             results += response.get('results', [])
             print(f'Retrieved {len(results)} out of {count} results...')
             kwargs.update({'searchContext': search_context})
-            if len(results) >= kwargs.get('limit') or len(results) >= count:
+            if len(results) >= kwargs.get('limit',  10) or len(results) >= count:
                 break
         else:
             # If there is no searchContext we have all of the results
