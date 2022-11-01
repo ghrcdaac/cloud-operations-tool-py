@@ -8,7 +8,8 @@ from json import JSONDecodeError
 
 def import_plugins():
     plugin_filter = [
-        'helpers'
+        'helpers',
+        'opensearch'
     ]
     plugins = {}
     plugin_dir = f'{os.path.abspath(os.path.dirname(__file__))}/plugins'
