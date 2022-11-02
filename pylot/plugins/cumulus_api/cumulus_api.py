@@ -30,12 +30,10 @@ def return_parser(subparsers):
         help='This plugin provides a commandline interface to the cumulus api endpoints.',
         description='Provides commandline access to the cumulus api. To see available arguments '
                     'check the cumulus documentation here: https://nasa.github.io/cumulus-api/#cumulus-api\n'
-                    'Every argument is a positional argument with a string value so it can just be supplied after the '
-                    'command: \n '
+                    'If more than 10 records are needed to be returned use the limit keyword argument: limit=XX\n'
                     'Examples: \n'
-                    ' - list collection fields="name,version": would only return the name and version of the first 10 '
-                    'collections\n'
-                    ' - update granule data=\'{"collectionId": "nalmaraw___1", "granuleId": '
+                    ' - pylot cumulus_api list collection fields="name,version"\n'
+                    ' - pylot cumulus_api update granule data=\'{"collectionId": "nalmaraw___1", "granuleId": '
                     '"LA_NALMA_firetower_220706_063000.dat", "status": "completed"}\'',
         usage=SUPPRESS,
         formatter_class=RawTextHelpFormatter
@@ -45,33 +43,45 @@ def return_parser(subparsers):
         sorted_options = str(sorted(list(options))).replace("'", '')
         subparser = subparsers_cli.add_parser(
             command, help=f'{sorted_options}',
-            usage=f'{command} {sorted_options} [-h]',
-            description=f'{command} the following: '
+            usage=f'{command} <positional argument>',
+            description=f'{command} action for the cumulus API'
         )
 
-        subparser.add_argument(command, nargs='?', choices=sorted_options, help=f'{sorted_options}', metavar='')
+        sorted_options_list = sorted_options.replace('[', '').replace(']', '').replace(' ', '').split(',')
+        subparser.add_argument(command, nargs='?', default=' ', choices=sorted_options_list, help=f'{sorted_options}',
+                               metavar='')
 
 
 def main(**kwargs):
     cml = PyLOTHelpers().get_cumulus_api_instance()
-    command = list(kwargs)[0]
-    target = kwargs.pop(command)
+    try:
+        command = list(kwargs)[0]
+    except IndexError:
+        print('Missing required positional argument. Use -h to see valid options.')
+        return
 
+    target = kwargs.pop(command)
     results = []
     while True:
         response = getattr(cml, f'{command}_{target}')(**kwargs)
-        search_context = response.get('meta', {}).get('searchContext')
-        results += response.get('results', [])
-        count = response.get("meta", {}).get("count")
+        # print(f'response: {response}')
+
+        try:
+            search_context = response.get('meta', {}).get('searchContext')
+        except AttributeError:
+            search_context = None
+            pass
+
         if search_context:
-            print(f'Retrieved {len(results)} out of {count} results...')
+            count = response.get("meta", {}).get("count")
+            results += response.get('results', [])
             kwargs.update({'searchContext': search_context})
+            if len(results) >= kwargs.get('limit',  10) or len(results) >= count:
+                break
         else:
             # If there is no searchContext we have all of the results
+            results = response
             break
-
-    if len(results) == 1:
-        results = results.pop()
 
     print(json.dumps(results, indent=2, sort_keys=True))
 
