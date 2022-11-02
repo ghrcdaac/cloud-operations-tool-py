@@ -39,7 +39,7 @@ Python 3.8+
 
 ## Installation
 ```jsunicoderegexp
-pip install git+https://github.com/ghrcdaac/cloud-operations-tool-py.git@main#egg=cloud-operations-tool
+pip install https://github.com/ghrcdaac/cloud-operations-tool-py/archive/refs/tags/v1.0.0.zip
 ```
 ## Set up
 ```bash
