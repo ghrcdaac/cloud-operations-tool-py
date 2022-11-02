@@ -30,12 +30,10 @@ def return_parser(subparsers):
         help='This plugin provides a commandline interface to the cumulus api endpoints.',
         description='Provides commandline access to the cumulus api. To see available arguments '
                     'check the cumulus documentation here: https://nasa.github.io/cumulus-api/#cumulus-api\n'
-                    'Every argument is a positional argument with a string value so it can just be supplied after the '
-                    'command: \n '
+                    'If more than 10 records are needed to be returned use the limit keyword argument: limit=XX\n'
                     'Examples: \n'
-                    ' - list collection fields="name,version": would only return the name and version of the first 10 '
-                    'collections\n'
-                    ' - update granule data=\'{"collectionId": "nalmaraw___1", "granuleId": '
+                    ' - pylot cumulus_api list collection fields="name,version"\n'
+                    ' - pylot cumulus_api update granule data=\'{"collectionId": "nalmaraw___1", "granuleId": '
                     '"LA_NALMA_firetower_220706_063000.dat", "status": "completed"}\'',
         usage=SUPPRESS,
         formatter_class=RawTextHelpFormatter
@@ -50,7 +48,8 @@ def return_parser(subparsers):
         )
 
         sorted_options_list = sorted_options.replace('[', '').replace(']', '').replace(' ', '').split(',')
-        subparser.add_argument(command, nargs='?', choices=sorted_options_list, help=f'{sorted_options}', metavar='')
+        subparser.add_argument(command, nargs='?', default=' ', choices=sorted_options_list, help=f'{sorted_options}',
+                               metavar='')
 
 
 def main(**kwargs):
