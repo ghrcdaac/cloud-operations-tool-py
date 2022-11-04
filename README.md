@@ -50,4 +50,4 @@ Define environment variable and source the file
 
 ## 📖 Documentation
 - ❓[HowTo](https://ghrcdaac.github.io/cloud-operations-tool-py/howto)
-- 🚀 Release note [v1.0.0](https://ghrcdaac.github.io/cloud-operations-tool-py/#v100).
+- 🚀 Release note [v1.0.0](https://github.com/ghrcdaac/cloud-operations-tool-py/releases/tag/v1.0.0).
