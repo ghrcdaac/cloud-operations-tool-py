@@ -13,7 +13,7 @@ class OpenSearch:
         return data
 
     @staticmethod
-    def query_opensearch(query_data, record_type, limit=100):
+    def query_opensearch(query_data, record_type, terminate_after=100):
         lambda_arn = os.getenv('OPENSEARCH_LAMBDA_ARN')
         if not lambda_arn:
             raise Exception('The ARN for the OpenSearch lambda is not defined. Provide it as an environment variable.')
@@ -23,7 +23,7 @@ class OpenSearch:
             'config': {
                 'query': query_data,
                 'record_type': str(record_type).rstrip('s'),
-                'size': int(limit)}
+                'terminate_after': int(terminate_after)}
         }
 
         print('Invoking OpenSearch lambda...')
@@ -39,19 +39,16 @@ class OpenSearch:
 
         # Download results from S3
         print('Downloading query results...')
-        temp = rsp.get('Payload').read().decode('utf-8')
-        ret_dict = json.loads(temp)
-        print(f'ret_dict: {ret_dict}')
+        ret_dict = json.loads(rsp.get('Payload').read().decode('utf-8'))
+        # print(f'ret_dict: {ret_dict}')
         s3_client = boto3.client('s3')
-        rsp = s3_client.get_object(
+        s3_client.download_file(
             Bucket=ret_dict.get('bucket'),
-            Key=ret_dict.get('key')
+            Key=ret_dict.get('key'),
+            Filename=f'{os.getcwd()}/query_results.json'
         )
 
-        with open('query_results.json', 'w+', encoding='utf-8') as json_file:
-            json.dump(rsp.get('Body').read().decode('utf-8'), fp=json_file, indent=2)
-
-        ret = f'Query results: {os.getcwd()}/query_results.json'
+        ret = f'{ret_dict.get("record_count")} records obtained: {os.getcwd()}/query_results.json'
         return ret
 
 
@@ -61,14 +58,17 @@ def return_parser(subparsers):
         help='This plugin is used to submit queries directly to OpenSearch bypassing the cumulus API.',
         description='Submit queries to opensearch'
     )
+    choices = ['granule', 'collection', 'provider', 'pdr', 'rule', 'logs', 'execution', 'reconciliationReport']
+    choice_str = str(choices).strip('[').strip(']').replace("'", '')
     subparser.add_argument(
         'record_type',
-        help='The OpenSearch record type to be queried. granules/providers/collections etc.',
-        metavar='record_type'
+        help=f'The OpenSearch record type to be queried: {choice_str}',
+        metavar='record_type',
+        choices=choices
     )
     subparser.add_argument(
-        '-l', '--limit',
-        help='Limit the number of records returned from OpenSearch',
+        '-t', '--terminate-after',
+        help='Limit the number of records returned from OpenSearch. Default is 100. Use 0 to retrieve all matches.',
         metavar='',
         default=100
     )
