@@ -55,9 +55,9 @@ def generate_parser(subparsers, action_target_dict):
                     'check the cumulus documentation here: https://nasa.github.io/cumulus-api/#cumulus-api\n'
                     'If more than 10 records are needed to be returned use the limit keyword argument: limit=XX\n'
                     'Examples: \n'
-                    ' - pylot cumulus_api list collection fields="name,version"\n'
+                    ' - pylot cumulus_api hello list collections fields="name,version"\n'
                     ' - pylot cumulus_api update granule \'{"collectionId": "nalmaraw___1", "granuleId": '
-                    '"LA_NALMA_firetower_220706_063000.dat", "status": "completed"}\'\n'
+                    '"LA_NALMA_firetower_220706_063000.dat", "status": "completed"}\' \n'
                     ' - pylot cumulus_api update granule update.json',
         usage=SUPPRESS,
         formatter_class=RawTextHelpFormatter
