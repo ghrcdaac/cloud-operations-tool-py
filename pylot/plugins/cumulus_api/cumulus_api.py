@@ -77,9 +77,9 @@ def generate_parser(subparsers, action_target_dict):
         for target_k, argument_v in target_v.items():
             plural = ''
             for arg in argument_v:
-                plural += f'<{arg}> '
+                plural.join(f'<{arg}> ')
             target_subparser = target_subparsers.add_parser(
-                target_k, help=f'',
+                target_k, help='',
                 usage=f'{target_k} {plural}',
                 description=f'{target_k} target for cumulus API commands'
             )
@@ -106,7 +106,7 @@ def main(**kwargs):
     data_val = kwargs.get('data', None)
     if data_val:
         if os.path.isfile(data_val):
-            with open(data_val, 'r') as file:
+            with open(data_val, 'r', encoding='utf-8') as file:
                 kwargs.update({'data': json.load(file)})
         else:
             kwargs.update({'data': json.loads(data_val)})
