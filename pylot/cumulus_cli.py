@@ -38,7 +38,6 @@ def main():
             raise ValueError(f'Plugin {name} does not have a return_parser function.')
 
     args, unknown = parser.parse_known_args()
-    print(f'args: {args}')
     for value in vars(args).values():
         if not value:
             parser.print_help()
