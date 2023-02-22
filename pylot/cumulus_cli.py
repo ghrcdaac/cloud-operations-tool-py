@@ -21,16 +21,17 @@ def import_plugins():
 
 
 def main():
+    if len(sys.argv) == 1:
+        sys.argv.append('-h')
     plugins = import_plugins()
     # Create argparser
     parser = argparse.ArgumentParser(
-        usage='<positional_argument> -h to access help for each plugin. \n',
+        usage='<plugin> -h to access help for each plugin. \n',
         description='PyLOT command line utility.'
     )
 
     # load plugin parsers
-    subparsers = parser.add_subparsers(dest='command')
-    subparsers.metavar = '                    '
+    subparsers = parser.add_subparsers(title='plugins', dest='command', required=True)
     for name, module in plugins.items():
         try:
             module.return_parser(subparsers)
@@ -38,10 +39,6 @@ def main():
             raise ValueError(f'Plugin {name} does not have a return_parser function.')
 
     args, unknown = parser.parse_known_args()
-    for value in vars(args).values():
-        if not value:
-            parser.print_help()
-            sys.exit(1)
 
     # Processed unknown arguments are keyword arguments to be passed to the request
     keyword_args = {}
@@ -60,8 +57,6 @@ def main():
     keyword_args = {**vars(args), **keyword_args}
     # Try to call the plugin's main
     command = keyword_args.pop('command')
-    # print(command)
-    # print(plugins.get(command))
     getattr(plugins.get(command), 'main')(**keyword_args)
 
     return 0

@@ -1,7 +1,7 @@
 import inspect
 import json
+import os
 from argparse import SUPPRESS, RawTextHelpFormatter
-from collections import defaultdict
 from inspect import getmembers, isfunction
 
 from .main import CumulusApi
@@ -9,6 +9,12 @@ from ..helpers.pylot_helpers import PyLOTHelpers
 
 
 def is_action_function(value):
+    """
+    Used to determine if the value passed in is a public method. The value passed in is assumed to be in the form
+    module.function_name
+    :param value: string to determine if it is a publish function or not
+    :return: boolean
+    """
     ret = True
     if not isfunction(value):
         ret = False
@@ -21,30 +27,25 @@ def is_action_function(value):
 
 
 def extract_action_target_args():
+    """
+    Extracts and processes all public member functions in the CumulusApi file and returns a dictionary of the form
+    {"action": {"target": {arguments}}}
+    These values are derived from the function signatures update_granule(self, data) where update, granule, and data are
+    the action, target, and arguments respectively.
+    """
     # Actions -> targets -> params
     action_target_dict = {}
     for member_function in getmembers(CumulusApi, is_action_function):
         arguments_set = set()
         inspection = inspect.getfullargspec(member_function[1])
-        # fas = inspect.getfullargspec(member_function[1])
-        # fas = inspect.signature(member_function[1])
-        # print(f'args-{member_function[0]}: {fas}')
-        # print(f'doc-{member_function[0]}: {inspect.getdoc(member_function[1])}')
-        # print(f'sig-{member_function[0]}: {inspect.signature(member_function[1])}')
-        # temp = inspect.getdoc(member_function[1])
-        # print(temp.split(':'))
-        # print(f'{member_function[0]}: {inspect.getcomments(member_function[1])}')
         for argument in inspection.args[1:]:
             arguments_set.add(argument)
-        # print(target_parameters)
         split_action_target = str(member_function[0]).split('_', maxsplit=1)
         if len(arguments_set) == 0:
             arguments_set = ''
-        # print(f'Handling {split_action_target[0]} and {split_action_target[1]}')
         action_target_dict.setdefault(
             split_action_target[0], {split_action_target[1]: arguments_set}
         )[split_action_target[1]] = arguments_set
-        # print(action_target_dict)
 
     return action_target_dict
 
@@ -61,27 +62,25 @@ def generate_parser(subparsers, action_target_dict):
                     ' - pylot cumulus_api list collections fields="name,version" limit=12 name__in="msuttp,msutls"\n'
                     ' - pylot cumulus_api update granule \'{"collectionId": "nalmaraw___1", "granuleId": '
                     '"LA_NALMA_firetower_220706_063000.dat", "status": "completed"}\' \n'
-                    ' - pylot cumulus_api update granule update.json\n'
-                    ,
-        usage=SUPPRESS,
+                    ' - pylot cumulus_api update granule update.json\n',
+        usage='<action> -h to see help for each action.',
         formatter_class=RawTextHelpFormatter
     )
-
-    action_subparsers = cumulus_api_parser.add_subparsers(dest='action')
-    action_subparsers.metavar = '               '
+    action_subparsers = cumulus_api_parser.add_subparsers(title='actions', dest='action', required=True)
     for action_k, target_v in action_target_dict.items():
-        options = ', '.join(target_v)
         action_parser = action_subparsers.add_parser(
-                action_k, help=options,
-                description=f'{action_k} action for the cumulus API',
-                usage=SUPPRESS,
+                action_k, help=f'{action_k} action for the cumulus API',
+                usage=f'{action_k} <target> ',
+                description=f'{action_k} action for the cumulus API'
             )
-        target_subparsers = action_parser.add_subparsers(dest='target')
-        target_subparsers.metavar = '               '
+        target_subparsers = action_parser.add_subparsers(title='target', dest='target', required=True)
         for target_k, argument_v in target_v.items():
+            plural = ''
+            for arg in argument_v:
+                plural += f'<{arg}> '
             target_subparser = target_subparsers.add_parser(
                 target_k, help=f'',
-                usage=SUPPRESS,
+                usage=f'{target_k} {plural}',
                 description=f'{target_k} target for cumulus API commands'
             )
             for argument in argument_v:
@@ -104,10 +103,9 @@ def main(**kwargs):
     cml = PyLOTHelpers().get_cumulus_api_instance()
     action = kwargs.pop('action')
     target = kwargs.pop('target')
-
     data_val = kwargs.get('data', None)
     if data_val:
-        if data_val.endswith('.json'):
+        if os.path.isfile(data_val):
             with open(data_val, 'r') as file:
                 kwargs.update({'data': json.load(file)})
         else:
@@ -115,13 +113,11 @@ def main(**kwargs):
 
     results = []
     while True:
-        # print(f'{action}_{target}({kwargs})')
         response = getattr(cml, f'{action}_{target}')(**kwargs)
         try:
             search_context = response.get('meta', {}).get('searchContext')
         except AttributeError:
             search_context = None
-            pass
 
         if search_context:
             count = response.get("meta", {}).get("count")
