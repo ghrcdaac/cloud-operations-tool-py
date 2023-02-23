@@ -150,7 +150,6 @@ class CumulusApi:
         :return: Request response
         """
         record_type = "collections"
-        print(f'kdubs: {kwargs}')
         return self.__crud_records(record_type=record_type, verb="get", **kwargs)
 
     def list_collections_with_active_granules(self, **kwargs):
