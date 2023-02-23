@@ -196,7 +196,7 @@ class CumulusApi:
         Delete a collection from Cumulus, but not from CMR.
         All related granules in Cumulus must have already been deleted from Cumulus.
         :param collection_name: cumulus collection name
-        :param collection_version: cumulus ollection version
+        :param collection_version: cumulus collection version
         :return:
         """
         record_type = f"collections/{collection_name}/{collection_version}"
@@ -257,7 +257,6 @@ class CumulusApi:
         granule files.
         :param granule_id: cumulus granule id
         :param data: json object containing reingest definition
-        :param data: Request parameters (executionArn or workflowName)
         :return:
         """
         record_type = f"granules/{granule_id}"
