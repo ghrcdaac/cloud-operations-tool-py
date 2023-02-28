@@ -98,7 +98,7 @@ class CumulusApi:
     def list_providers(self, **kwargs):
         """
         List granules in the Cumulus system
-        :paramkwargs:
+        :param kwargs: cumulus query strings and parameters
         :return:
         """
         record_type = "providers"
@@ -107,8 +107,8 @@ class CumulusApi:
     def get_provider(self, provider_id, **kwargs):
         """
         Get a provider
-        :param provider_id:
-        :paramkwargs:
+        :param provider_id: cumulus provider id
+        :param kwargs: cumulus query strings and parameters
         :return:
         """
         record_type = f"providers/{provider_id}"
@@ -117,7 +117,7 @@ class CumulusApi:
     def create_provider(self, data):
         """
         Create a New provider
-        :param data: Json data of the collection to be ingested
+        :param data: json object containing granule definition
         :return: request response
         """
         record_type = "providers"
@@ -126,7 +126,7 @@ class CumulusApi:
     def update_provider(self, data):
         """
         Update values for a provider
-        :param data: provider data with updated fields,
+        :param data: json object containing provider definition
         :return: message of success or raise error
         """
         record_type = f"providers/{data['id']}"
@@ -135,7 +135,7 @@ class CumulusApi:
     def delete_provider(self, provider_id):
         """
         Delete a provider
-        :param provider_id: Provider id
+        :param provider_id: cumulus provider id
         :return:
         """
         record_type = f"providers/{provider_id}"
@@ -146,6 +146,7 @@ class CumulusApi:
     def list_collections(self, **kwargs):
         """
         List collections in the Cumulus system
+        :param kwargs: cumulus query strings and parameters
         :return: Request response
         """
         record_type = "collections"
@@ -154,6 +155,7 @@ class CumulusApi:
     def list_collections_with_active_granules(self, **kwargs):
         """
         List collections in the Cumulus system that have active associated granules.
+        :param kwargs: cumulus query strings and parameters
         :return: Request response
         """
         record_type = "collections/active"
@@ -162,9 +164,9 @@ class CumulusApi:
     def get_collection(self, collection_name, collection_version, **kwargs):
         """
         Get a collection
-        :param collection_name:
-        :param collection_version:
-        :param kwargs:
+        :param collection_name: cumulus collection name
+        :param collection_version: cumulus collection version
+        :param kwargs: cumulus query strings and parameters
         :return:
         """
         record_type = f"collections/{collection_name}/{collection_version}"
@@ -173,7 +175,7 @@ class CumulusApi:
     def create_collection(self, data):
         """
         Create a New collection
-        :param data: Json data of the collection to be ingested
+        :param data: json object containing a collection definition
         :return: request response
         """
         record_type = "collections"
@@ -182,7 +184,7 @@ class CumulusApi:
     def update_collection(self, data):
         """
         Update values for a collection
-        :param data: Can be the whole collection object or just a subset of fields,
+        :param data: json object containing updated collection definition
         the ones that are being updated.
         :return:
         """
@@ -193,8 +195,8 @@ class CumulusApi:
         """
         Delete a collection from Cumulus, but not from CMR.
         All related granules in Cumulus must have already been deleted from Cumulus.
-        :param collection_name: Collection name
-        :param collection_version: Collection version
+        :param collection_name: cumulus collection name
+        :param collection_version: cumulus collection version
         :return:
         """
         record_type = f"collections/{collection_name}/{collection_version}"
@@ -205,7 +207,7 @@ class CumulusApi:
     def list_granules(self, **kwargs):
         """
         List granules in the Cumulus system
-        :paramkwargs:
+        :param kwargs: cumulus query strings and parameters
         :return:
         """
         record_type = "granules"
@@ -214,8 +216,8 @@ class CumulusApi:
     def get_granule(self, granule_id, **kwargs):
         """
         Get a granule
-        :param granule_id:
-        :param kwargs:
+        :param granule_id: cumulus granule id
+        :param kwargs: cumulus query strings and parameters
         :return:
         """
         record_type = f"granules/{granule_id}"
@@ -224,6 +226,7 @@ class CumulusApi:
     def create_granule(self, data):
         """
         Create a granule
+        :param data: json object containing granule definition
         :return: Request response
         """
         record_type = "granules"
@@ -232,6 +235,7 @@ class CumulusApi:
     def update_granule(self, data):
         """
         Updates a granule
+        :param data: json object containing updated granule definition
         :return: Request response
         """
         record_type = f"granules/{data['granuleId']}"
@@ -240,18 +244,19 @@ class CumulusApi:
     def associate_execution(self, data):
         """
         Associate an execution with a granule
+        :param data: json object containing execution definition
         :return: Request response
         """
         record_type = f"granules/{data['granuleId']}/executions"
         return self.__crud_records(record_type=record_type, verb="post", data=data)
 
-    def reingest_granule(self, granule_id: str, data: dict = None):
+    def reingest_granule(self, granule_id, data=None):
         """
         Reingest a granule. This causes the granule to re-download to Cumulus from source,
         and begin processing from scratch. Reingesting a granule will overwrite existing
         granule files.
-        :param granule_id: GranuleId
-        :param data: Request parameters (executionArn or workflowName)
+        :param granule_id: cumulus granule id
+        :param data: json object containing reingest definition
         :return:
         """
         record_type = f"granules/{granule_id}"
@@ -263,6 +268,8 @@ class CumulusApi:
         """
         Apply the named workflow to the granule. Workflow input will be built from template
         and provided entire Cumulus granule record as payload.
+        :param granule_id: cumulus granule id
+        :param workflow_name: cumulus workflow name
         :return: status message
         """
         record_type = f"granules/{granule_id}"
@@ -273,8 +280,8 @@ class CumulusApi:
         """
         Move a granule from one location on S3 to another. Individual files are moved to
         specific locations by using a regex that matches their filenames.
-        :param granule_id: granuleId
-        :param regex: granule regex
+        :param granule_id: cumulus granule id
+        :param regex: regex to match granule names to move
         :param bucket: bucket where the granule is located
         :param file_path: new file path
         :return:
@@ -287,7 +294,7 @@ class CumulusApi:
     def remove_granule_from_cmr(self, granule_id):
         """
         Remove a Cumulus granule from CMR.
-        :param granule_id: granuleId
+        :param granule_id: cumulus granule id
         :return:
         """
         record_type = f"granules/{granule_id}"
@@ -336,6 +343,7 @@ class CumulusApi:
     def list_pdrs(self, **kwargs):
         """
         List PDRs in the Cumulus system.
+        :param kwargs: Query terms in the form of key=value
         :return: Request response
         """
         record_type = "pdrs"
@@ -345,7 +353,7 @@ class CumulusApi:
         """
         Get a pdr
         :param pdr_name:
-        :param kwargs:
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = f"pdrs/{pdr_name}"
@@ -364,6 +372,7 @@ class CumulusApi:
     def list_rules(self, **kwargs):
         """
         List rules in the Cumulus system.
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = "rules"
@@ -373,7 +382,7 @@ class CumulusApi:
         """
         Get a rule
         :param rule_name:
-        :param kwargs:
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = f"rules/{rule_name}"
@@ -430,7 +439,7 @@ class CumulusApi:
     def get_stats_aggregate(self, **kwargs):
         """
         Count the value frequencies for a given field, for a given type of record in Cumulus
-        :paramkwargs: Query required by cumulus api
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = "stats/aggregate"
@@ -442,7 +451,7 @@ class CumulusApi:
         """
         List processing logs from the Cumulus engine. A log's level field may be either info or
         error.
-        :paramkwargs: Query required by cumulus api
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = "logs"
@@ -452,7 +461,7 @@ class CumulusApi:
         """
         Get a log
         :param execution_name:
-        :param kwargs:
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = f"logs/{execution_name}"
@@ -473,6 +482,7 @@ class CumulusApi:
     def list_executions(self, **kwargs):
         """
         List executions in the Cumulus system.
+        :param kwargs: Cumulus query strings and parameters
         :return: Request response
         """
         record_type = "executions"
@@ -482,7 +492,7 @@ class CumulusApi:
         """
         Get an execution
         :param execution_arn:
-        :param kwargs:
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = f"executions/{execution_arn}"
@@ -499,6 +509,7 @@ class CumulusApi:
     def search_executions_by_granules(self, data, **kwargs):
         """
         Return executions associated with specific granules
+        :param kwargs: Cumulus query strings and parameters
         :return: Request response
         """
         record_type = "executions/search-by-granules"
@@ -507,6 +518,7 @@ class CumulusApi:
     def search_workflows_by_granules(self, data, **kwargs):
         """
         Return the workflows that have run on specific granules
+        :param kwargs: Cumulus query strings and parameters
         :return: Request response
         """
         record_type = "executions/workflows-by-granules"
@@ -541,7 +553,7 @@ class CumulusApi:
     def list_workflows(self, **kwargs):
         """
         List workflows
-        :paramkwargs:
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = "workflows"
@@ -550,7 +562,7 @@ class CumulusApi:
     def get_workflow(self, workflow_name, **kwargs):
         """
         List workflows
-        :paramkwargs:
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = f"workflows/{workflow_name}"
@@ -561,6 +573,7 @@ class CumulusApi:
     def list_async_operations(self, **kwargs):
         """
         List async operations in the Cumulus system.
+        :param kwargs: Cumulus query strings and parameters
         :return: Request response
         """
         record_type = "asyncOperations"
@@ -570,7 +583,7 @@ class CumulusApi:
         """
         Get an async operation
         :param operation_id:
-        :param kwargs:
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = f"asyncOperations/{operation_id}"
@@ -601,6 +614,7 @@ class CumulusApi:
     def list_reconciliation_reports(self, **kwargs):
         """
         List reconciliation reports in the Cumulus system.
+        :param kwargs: Cumulus query strings and parameters
         :return: Request response
         """
         record_type = "reconciliationReports"
@@ -610,7 +624,7 @@ class CumulusApi:
         """
         Get a reconciliation report
         :param report_name:
-        :param kwargs:
+        :param kwargs: Cumulus query strings and parameters
         :return:
         """
         record_type = f"reconciliationReports/{report_name}"
@@ -619,6 +633,7 @@ class CumulusApi:
     def create_reconciliation_report(self, **kwargs):
         """
         Create a new reconciliation report.
+        :param kwargs: Cumulus query strings and parameters
         :return: Request response
         """
         record_type = "reconciliationReports"
@@ -647,6 +662,7 @@ class CumulusApi:
     def reindex_elasticsearch(self, **kwargs):
         """
         Create a new index and reindexes the source index to the new, destination index
+        :param kwargs: Cumulus query strings and parameters
         :return: Request response
         """
         record_type = "elasticsearch/reindex"
@@ -671,6 +687,7 @@ class CumulusApi:
     def reindex_elasticsearh_from_database(self, **kwargs):
         """
         Reindex your data from the database
+        :param kwargs: cumulus query strings and parameters
         :return: Request response
         """
         record_type = "elasticsearch/index-from-database"
@@ -726,6 +743,7 @@ class CumulusApi:
         """
         Trigger a run of the postgres-migration-count-tool as an async operation of type Migration
         Count Report.
+        :param kwargs: Cumulus query strings and parameters
         :return: Request response
         """
         record_type = "migrationCounts"

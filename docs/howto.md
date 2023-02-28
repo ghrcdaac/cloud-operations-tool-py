@@ -3,56 +3,62 @@
 ## Basic usage
 `pylot -h`
 ```shell
-usage: <positional_argument> -h to access help for each plugin. 
+usage: <plugin> -h to access help for each plugin. 
 
 PyLOT command line utility.
 
-positional arguments:
-  {cumulus_api}
-    cumulus_api  This plugin provides a commandline interface to the cumulus api endpoints.
-
 optional arguments:
-  -h, --help     show this help message and exit
+  -h, --help            show this help message and exit
+
+plugins:
+  {cumulus_api,opensearch}
+    cumulus_api         This plugin provides a commandline interface to the cumulus api endpoints.
+    opensearch          This plugin is used to submit queries directly to OpenSearch bypassing the cumulus API.
+
 ```
 The initial help text will display the top level help text for the PyLOT command line functionality. The positional 
 arguments are plugins that can be accessed by passing the name as an argument and -h to access available help text 
 for the plugin:  
 `pylot cumulus_api -h`
 ```shell
+usage: <action> -h to see help for each action.
+
 Provides commandline access to the cumulus api. To see available arguments check the cumulus documentation here: https://nasa.github.io/cumulus-api/#cumulus-api
 If more than 10 records are needed to be returned use the limit keyword argument: limit=XX
 Examples: 
- - pylot cumulus_api list collection fields="name,version" limit=1
- - pylot cumulus_api update granule data='{"collectionId": "nalmaraw___1", "granuleId": "LA_NALMA_firetower_220706_063000.dat", "status": "completed"}'
-
-positional arguments:
-  {apply,associate,bulk,create,delete,get,granules,list,move,recover,refresh,reindex,reingest,remove,replay,run,search,serve,update}
-    apply               [workflow_to_granule]
-    associate           [execution]
-    bulk                [delete, reingest]
-    create              [collection, execution, granule, provider, reconciliation_report, rule]
-    delete              [collection, execution, granule, pdr, provider, reconciliation_report, rule, token]
-    get                 [async_operation, collection, elasticsearch_index, elasticsearch_indices_info, elasticsearch_reindex_status, execution, execution_status, granule, granules_csv, instance_metadata, log, pdr, provider, reconciliation_report, rule, schema, stats_aggregate, stats_summary, version, workflow]
-    granules            [bulk_op]
-    list                [async_operations, collections, collections_with_active_granules, executions, granules, logs, pdrs, providers, reconciliation_reports, rules, workflows]
-    move                [granule]
-    recover             [cumulus_messages]
-    refresh             [token]
-    reindex             [elasticsearch, elasticsearh_from_database]
-    reingest            [granule]
-    remove              [granule_from_cmr]
-    replay              [ingest_notification]
-    run                 [migration_count, rule]
-    search              [executions_by_granules, workflows_by_granules]
-    serve               [dashboard_from_bucket]
-    update              [collection, elasticsearch_index, execution, granule, provider, rule]
+ - pylot cumulus_api list collections fields="name,version"
+ - pylot cumulus_api list collections fields="name,version" limit=12 name__in="msuttp,msutls"
+ - pylot cumulus_api update granule '{"collectionId": "nalmaraw___1", "granuleId": "LA_NALMA_firetower_220706_063000.dat", "status": "completed"}' 
+ - pylot cumulus_api update granule update.json
 
 optional arguments:
   -h, --help            show this help message and exit
 
+actions:
+  {apply,associate,bulk,create,delete,get,granules,list,move,recover,refresh,reindex,reingest,remove,replay,run,search,serve,update}
+    apply               apply action for the cumulus API
+    associate           associate action for the cumulus API
+    bulk                bulk action for the cumulus API
+    create              create action for the cumulus API
+    delete              delete action for the cumulus API
+    get                 get action for the cumulus API
+    granules            granules action for the cumulus API
+    list                list action for the cumulus API
+    move                move action for the cumulus API
+    recover             recover action for the cumulus API
+    refresh             refresh action for the cumulus API
+    reindex             reindex action for the cumulus API
+    reingest            reingest action for the cumulus API
+    remove              remove action for the cumulus API
+    replay              replay action for the cumulus API
+    run                 run action for the cumulus API
+    search              search action for the cumulus API
+    serve               serve action for the cumulus API
+    update              update action for the cumulus API
 ```
-The left-hand column under the positional argument section is the action, and the right hand list contains the possible 
-targets. When entering the command the action and target are separated by a space:  
+The left-hand column represents any cumulus action. To see the 
+targets for an action provider ```-h``` with the action.
+When entering the command the action and target are separated by a space:  
 `pylot cumulus_api list collections`
 
 ### Basic usage of cumulus_api
@@ -60,7 +66,7 @@ The cumulus_api functions as a commandline interface to all the available cumulu
 api documentation here: https://nasa.github.io/cumulus-api/#cumulus-api  
 Arguments are passed to the request using keywords. Using https://nasa.github.io/cumulus-api/#retrieve-granule
 as an example:  
-`pylot cumulus_api get granule granule_id=LA_NALMA_firetower_220706_060000.dat`
+`pylot cumulus_api get granule LA_NALMA_firetower_220706_060000.dat`
 ```json
 {
   "collectionId": "nalmaraw___1",
@@ -95,7 +101,7 @@ as an example:
 }
 ```
 The endpoint looks as follows ```/granules/{granuleId}``` and any endpoint that has braced values ```"{someValue}"``` 
-will require a keyword argument in the  form  of ```some_value=""```. In the above example `granule_id=""` was used.
+will require a positional argument. In the above example `LA_NALMA_firetower_220706_060000.dat` was the granuleId.
 
 Some endpoints allow for query strings to be passed. These can just be added to the command with the same format.
 For example, the following is a more complicated command:  
@@ -115,12 +121,12 @@ For example, the following is a more complicated command:
 
 If an endpoint requires a data argument it can be provided as a json string: 
 ```json 
-data='{"collectionId": "nalmaraw___1", "granuleId": "LA_NALMA_firetower_220706_063000.dat", "status": "completed"}'
+'{"collectionId": "nalmaraw___1", "granuleId": "LA_NALMA_firetower_220706_063000.dat", "status": "completed"}'
 ```
 
 The following is an example of updating a granule:
 ```shell
-pylot cumulus_api update granule data='{"collectionId": "nalmaraw___1", "granuleId": "LA_NALMA_firetower_220706_063000.dat", "status": "completed"}'
+pylot cumulus_api update granule '{"collectionId": "nalmaraw___1", "granuleId": "LA_NALMA_firetower_220706_063000.dat", "status": "completed"}'
 ```
 ```json
 {
