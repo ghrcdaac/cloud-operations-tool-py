@@ -1,7 +1,7 @@
 import inspect
 import json
 import os
-from argparse import SUPPRESS, RawTextHelpFormatter
+from argparse import RawTextHelpFormatter
 from inspect import getmembers, isfunction
 
 from .main import CumulusApi
@@ -111,24 +111,27 @@ def main(**kwargs):
         else:
             kwargs.update({'data': json.loads(data_val)})
 
+    response = getattr(cml, f'{action}_{target}')(**kwargs)
+    search_context = response.get('meta', {}).get('searchContext', None)
+    if search_context:
+        kwargs.update({'searchContext': search_context})
+    count = response.get("meta", {}).get("count")
+    limit = kwargs.get('limit', 10)
+
     results = []
     while True:
-        response = getattr(cml, f'{action}_{target}')(**kwargs)
-        try:
-            search_context = response.get('meta', {}).get('searchContext')
-        except AttributeError:
-            search_context = None
-
-        if search_context:
-            count = response.get("meta", {}).get("count")
-            results += response.get('results', [])
-            kwargs.update({'searchContext': search_context})
-            if len(results) >= kwargs.get('limit',  10) or len(results) >= count:
-                break
+        res_len = len(results)
+        resp_res = response.get('results', [])
+        if res_len + len(resp_res) < limit:
+            results += resp_res
         else:
-            # If there is no searchContext we have all of the results
-            results = response
+            results += resp_res[:limit - res_len]
+
+        res_len = len(results)
+        if res_len >= limit or res_len >= count:
             break
+        else:
+            response = getattr(cml, f'{action}_{target}')(**kwargs)
 
     print(json.dumps(results, indent=2, sort_keys=True))
 
