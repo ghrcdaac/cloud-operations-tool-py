@@ -128,10 +128,10 @@ def main(**kwargs):
             results += resp_res[:limit - res_len]
 
         res_len = len(results)
-        if res_len >= limit or res_len >= count:
-            break
-        else:
+        if res_len < limit and res_len < count:
             response = getattr(cml, f'{action}_{target}')(**kwargs)
+        else:
+            break
 
     print(json.dumps(results, indent=2, sort_keys=True))
 
