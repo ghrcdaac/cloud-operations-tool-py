@@ -41,7 +41,7 @@ class CumulusApi:
         :param data: json data to be ingested
         :return: False in case of error
         """
-        allowed_verbs = ['GET', 'POST', 'PUT', 'DELETE']
+        allowed_verbs = {'GET', 'PATCH', 'POST', 'PUT', 'DELETE'}
         if verb.upper() not in allowed_verbs:
             return f"{verb} is not a supported http request"
         url = f"{self.INVOKE_BASE_URL}/v1/{record_type}"
@@ -130,7 +130,7 @@ class CumulusApi:
         :return: message of success or raise error
         """
         record_type = f"providers/{data['id']}"
-        return self.__crud_records(record_type=record_type, verb="put", data=data)
+        return self.__crud_records(record_type=record_type, verb="patch", data=data)
 
     def delete_provider(self, provider_id):
         """
@@ -189,7 +189,7 @@ class CumulusApi:
         :return:
         """
         record_type = f"collections/{data['name']}/{data['version']}"
-        return self.__crud_records(record_type=record_type, verb="put", data=data)
+        return self.__crud_records(record_type=record_type, verb="patch", data=data)
 
     def delete_collection(self, collection_name, collection_version):
         """
@@ -239,7 +239,7 @@ class CumulusApi:
         :return: Request response
         """
         record_type = f"granules/{data['granuleId']}"
-        return self.__crud_records(record_type=record_type, verb="put", data=data)
+        return self.__crud_records(record_type=record_type, verb="patch", data=data)
 
     def associate_execution(self, data):
         """
@@ -405,7 +405,7 @@ class CumulusApi:
         :return: Returns a mapping of the updated properties.
         """
         record_type = f"rules/{data['name']}"
-        return self.__crud_records(record_type=record_type, verb="put", data=data)
+        return self.__crud_records(record_type=record_type, verb="patch", data=data)
 
     def delete_rule(self, rule_name):
         """
@@ -538,7 +538,7 @@ class CumulusApi:
         :return: Request response
         """
         record_type = f"executions/{data['arn']}"
-        return self.__crud_records(record_type=record_type, verb="put", data=data)
+        return self.__crud_records(record_type=record_type, verb="patch", data=data)
 
     def delete_execution(self, execution_arn):
         """
