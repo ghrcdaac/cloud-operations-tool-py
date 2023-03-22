@@ -115,7 +115,7 @@ def main(**kwargs):
     search_context = response.get('meta', {}).get('searchContext', None)
     if search_context:
         kwargs.update({'searchContext': search_context})
-    count = response.get("meta", {}).get("count")
+    count = response.get("meta", {}).get("count", 0)
     limit = kwargs.get('limit', 10)
 
     results = []
