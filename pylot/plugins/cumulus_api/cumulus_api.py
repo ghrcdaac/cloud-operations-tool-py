@@ -111,26 +111,21 @@ def main(**kwargs):
         else:
             kwargs.update({'data': json.loads(data_val)})
 
-    response = getattr(cml, f'{action}_{target}')(**kwargs)
-    search_context = response.get('meta', {}).get('searchContext', None)
-    if search_context:
-        kwargs.update({'searchContext': search_context})
-    count = response.get("meta", {}).get("count", 0)
     limit = kwargs.get('limit', 10)
-
     results = []
     while True:
-        res_len = len(results)
-        resp_res = response.get('results', [])
-        if res_len + len(resp_res) < limit:
-            results += resp_res
+        response = getattr(cml, f'{action}_{target}')(**kwargs)
+        resp_res = response.get('results', None)
+        if resp_res is not None:
+            kwargs.update({'searchContext': response.get('meta', {}).get('searchContext', None)})
+            res_len = len(results)
+            if res_len + len(resp_res) < limit:
+                results += resp_res
+            else:
+                results += resp_res[:limit - res_len]
+                break
         else:
-            results += resp_res[:limit - res_len]
-
-        res_len = len(results)
-        if res_len < limit and res_len < count:
-            response = getattr(cml, f'{action}_{target}')(**kwargs)
-        else:
+            results = response
             break
 
     print(json.dumps(results, indent=2, sort_keys=True))

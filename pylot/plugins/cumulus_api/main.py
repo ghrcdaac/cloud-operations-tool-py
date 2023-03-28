@@ -130,7 +130,7 @@ class CumulusApi:
         :return: message of success or raise error
         """
         record_type = f"providers/{data['id']}"
-        return self.__crud_records(record_type=record_type, verb="patch", data=data)
+        return self.__crud_records(record_type=record_type, verb="put", data=data)
 
     def delete_provider(self, provider_id):
         """
@@ -189,7 +189,7 @@ class CumulusApi:
         :return:
         """
         record_type = f"collections/{data['name']}/{data['version']}"
-        return self.__crud_records(record_type=record_type, verb="patch", data=data)
+        return self.__crud_records(record_type=record_type, verb="put", data=data)
 
     def delete_collection(self, collection_name, collection_version):
         """
@@ -405,7 +405,7 @@ class CumulusApi:
         :return: Returns a mapping of the updated properties.
         """
         record_type = f"rules/{data['name']}"
-        return self.__crud_records(record_type=record_type, verb="patch", data=data)
+        return self.__crud_records(record_type=record_type, verb="put", data=data)
 
     def delete_rule(self, rule_name):
         """
@@ -538,7 +538,7 @@ class CumulusApi:
         :return: Request response
         """
         record_type = f"executions/{data['arn']}"
-        return self.__crud_records(record_type=record_type, verb="patch", data=data)
+        return self.__crud_records(record_type=record_type, verb="put", data=data)
 
     def delete_execution(self, execution_arn):
         """
@@ -682,7 +682,7 @@ class CumulusApi:
         :return: Request response
         """
         record_type = "elasticsearch/change-index"
-        return self.__crud_records(record_type=record_type, verb="post", data=data)
+        return self.__crud_records(record_type=record_type, verb="put", data=data)
 
     def reindex_elasticsearh_from_database(self, **kwargs):
         """
