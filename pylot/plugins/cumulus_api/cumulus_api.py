@@ -111,7 +111,8 @@ def main(**kwargs):
         else:
             kwargs.update({'data': json.loads(data_val)})
 
-    limit = kwargs.get('limit', 10)
+    cumulus_api_lambda_return_limit = 100
+    limit = kwargs.get('limit', cumulus_api_lambda_return_limit)
     results = []
     while True:
         response = getattr(cml, f'{action}_{target}')(**kwargs)
@@ -119,7 +120,7 @@ def main(**kwargs):
         if resp_res is not None:
             kwargs.update({'searchContext': response.get('meta', {}).get('searchContext', None)})
             res_len = len(results)
-            if res_len + len(resp_res) < limit:
+            if res_len + len(resp_res) < limit and len(resp_res) >= cumulus_api_lambda_return_limit:
                 results += resp_res
             else:
                 results += resp_res[:limit - res_len]
