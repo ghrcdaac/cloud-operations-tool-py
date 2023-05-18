@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from tempfile import mkdtemp
 
-from ..cumulus_api.main import CumulusApi
+from cumulus_api import CumulusApi
 
 
 @dataclass
@@ -18,13 +18,12 @@ class PyLOTHelpers:
             options = json.load(_file)
         return options
 
-
     @staticmethod
     def get_hash_token_file():
-        now : datetime  = datetime.now()
-        captured_time : int = 60
-        for ele in range(0,60, 15):
-            if now.minute<ele:
+        now: datetime = datetime.now()
+        captured_time: int = 60
+        for ele in range(0, 60, 15):
+            if now.minute < ele:
                 captured_time = ele
                 break
         return f"{now.day}-{now.hour}-{captured_time}"
@@ -37,7 +36,7 @@ class PyLOTHelpers:
         tempfile = f'{mkdtemp()}/{get_hashed_file_name}'
         if not os.path.isfile(tempfile):
             with open(tempfile, 'w', encoding='utf-8') as _file:
-                cml = CumulusApi()
+                cml = CumulusApi(use_os_env=True)
                 _file.write(cml.TOKEN)
         else:
             with open(tempfile, 'r', encoding='utf-8') as _file:

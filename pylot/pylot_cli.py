@@ -14,7 +14,9 @@ def import_plugins():
     plugin_dir = f'{os.path.abspath(os.path.dirname(__file__))}/plugins'
     for file in os.listdir(plugin_dir):
         if not file.startswith('_') and file not in plugin_filter:
-            module = importlib.import_module(f'pylot.plugins.{file}.{file}')
+            plugin = f'pylot.plugins.{file}.main'
+            print(f'Loading plugin: {plugin}')
+            module = importlib.import_module(plugin)
             plugins[file] = module
 
     return plugins
@@ -57,7 +59,9 @@ def main():
     keyword_args = {**vars(args), **keyword_args}
     # Try to call the plugin's main
     command = keyword_args.pop('command')
-    getattr(plugins.get(command), 'main')(**keyword_args)
+    plugin = plugins.get(command)
+
+    getattr(plugin, 'main')(**keyword_args)
 
     return 0
 
