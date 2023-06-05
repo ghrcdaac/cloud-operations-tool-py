@@ -35,7 +35,7 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
     entry_points={
-        'console_scripts': ['pylot=pylot.cumulus_cli:main']
+        'console_scripts': ['pylot=pylot.pylot_cli:main']
     },
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,

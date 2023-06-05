@@ -1,4 +1,3 @@
-import collections
 import json
 import os
 import concurrent.futures
@@ -129,7 +128,7 @@ def process_update_data(update_data, results='query_results.json'):
 
 def update_dictionary(results_dict, update_dict):
     for k, v in update_dict.items():
-        if isinstance(v, collections.Mapping):
+        if isinstance(v, dict):
             results_dict[k] = update_dictionary(update_dict.get(k, {}), v)
         else:
             results_dict[k] = v
