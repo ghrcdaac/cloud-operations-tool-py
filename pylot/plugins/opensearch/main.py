@@ -50,8 +50,9 @@ class OpenSearch:
             Filename=f'{os.getcwd()}/{results}'
         )
 
-        ret = f'{ret_dict.get("record_count")} {record_type} records obtained: {os.getcwd()}/{results}'
-        return ret
+        file = f'{os.getcwd()}/{results}'
+        print(f'{ret_dict.get("record_count")} {record_type} records obtained: {os.getcwd()}/{results}')
+        return file
 
 
 def return_parser(subparsers):
@@ -83,12 +84,12 @@ def return_parser(subparsers):
 
     group = subparser.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        '-d', '--data',
-        help='The name of a file containing a json query: <filename>.json',
+        '-q', '--query',
+        help='The name of a file containing an OpenSearch query: <filename>.json',
         metavar=''
     )
     group.add_argument(
-        '-q', '--query',
+        '-s', '--query-string',
         help='A json query string using the OpenSearch DSL: '
              'https://opensearch.org/docs/latest/opensearch/query-dsl/index/ '
              'Example: \'{"query": {"term": {"collectionId": "goesimpacts___1"}}}\'',
@@ -97,24 +98,19 @@ def return_parser(subparsers):
 
     subparser.add_argument(
         '-u', '--update-data',
-        help='A json file with desired fields and values. '
-             'Example: {"status": "running"} would update all records that match the provided OpenSearch query to '
-             'have a running status. Any number of fields can be used.',
+        help='The name of a json file containing key values pairs to update records with: <filename>.json',
+        metavar=''
+    )
+
+    subparser.add_argument(
+        '-d', '--delete',
+        help='The name of a json file containing a cumulus bulk delete definition. The ids will be populated'
+             'from the query results: <filename>.json',
         metavar=''
     )
 
 
-def process_update_data(update_data, results='query_results.json'):
-    results_file = f'{os.getcwd()}/{results}'
-    with open(results_file, 'r', encoding='utf-8') as json_file:
-        query_results = json.load(json_file)
-
-    # Remove extra OpenSearch information
-    i = 0
-    while i < len(query_results):
-        query_results[i] = query_results[i].get('_source')
-        i += 1
-
+def process_update_data(update_data, query_results):
     update_file = f'{os.getcwd()}/{update_data}'
     print(f'Attempting to update using data file: {update_file} ')
     with open(update_file, 'r', encoding='utf-8') as json_file:
@@ -122,6 +118,8 @@ def process_update_data(update_data, results='query_results.json'):
 
     for record in query_results:
         update_dictionary(record, update_dict)
+        if not isinstance(record.get('productVolume'), str):
+            record.update({'productVolume': str(record.get('productVolume'))})
 
     return query_results
 
@@ -134,6 +132,42 @@ def update_dictionary(results_dict, update_dict):
             results_dict[k] = v
 
     return results_dict
+
+
+def bulk_delete_cumulus(delete_file, query_results):
+    cml = PyLOTHelpers().get_cumulus_api_instance()
+
+    # Open Delete definition
+    delete_file = f'{os.getcwd()}/{delete_file}'
+    with open(delete_file, 'r+', encoding='utf-8') as delete_definition:
+        delete_config = json.load(delete_definition)
+
+    # Try batching the bulk deletes to reduce chance of overwhelming API
+    id_array = []
+    for granule in query_results:
+        granule_id = granule.get('granuleId')
+        id_array.append(granule_id)
+
+    delete_config.update({'ids': id_array})
+
+    # Execute bulk delete
+    rsp = cml.bulk_delete(delete_config)
+    print(f'check bulk delete status:\npylot cumulus_api get async_operation {rsp.get("id")}')
+
+
+def delete_cumulus(record_type, query_results):
+    cml = PyLOTHelpers().get_cumulus_api_instance()
+    delete_function = getattr(cml, f'delete_{record_type}')
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for record in query_results:
+            print((f'Deleting: {record}'))
+            futures.append(executor.submit(delete_function, record))
+        for future in concurrent.futures.as_completed(futures):
+            print(future.result())
+
+    print(f'Deleted {len(query_results)} records.')
 
 
 def update_cumulus(record_type, query_results):
@@ -150,12 +184,27 @@ def update_cumulus(record_type, query_results):
     print(f'Updated {len(query_results)} records.')
 
 
-def main(record_type, results=None, query=None, data=None, update_data=None, **kwargs):
-    query = json.loads(query) if query else OpenSearch.read_json_file(data)
-    res = OpenSearch.query_opensearch(query_data=query, record_type=record_type, results=results, **kwargs)
-    print(res)
-    if update_data:
-        updated_results = process_update_data(update_data)
-        update_cumulus(record_type, updated_results)
+def main(record_type, results=None, query=None, query_string=None, update_data=None, delete=None, **kwargs):
+    query = OpenSearch.read_json_file(query) if query else json.loads(query_string)
+    results_file = OpenSearch.query_opensearch(query_data=query, record_type=record_type, results=results, **kwargs)
+
+    if update_data or delete:
+        # results_file = f'{os.getcwd()}/{}'
+        with open(results_file, 'r', encoding='utf-8') as results_file:
+            query_results = json.load(results_file)
+
+        # Remove extra OpenSearch information
+        i = 0
+        while i < len(query_results):
+            query_results[i] = query_results[i].get('_source')
+            i += 1
+
+        if update_data:
+            updated_results = process_update_data(update_data, query_results)
+            query_results = updated_results
+            update_cumulus(record_type, updated_results)
+
+        if delete:
+            bulk_delete_cumulus(delete, query_results)
 
     return 0

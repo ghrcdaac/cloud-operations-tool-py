@@ -60,7 +60,6 @@ def main():
     # Try to call the plugin's main
     command = keyword_args.pop('command')
     plugin = plugins.get(command)
-
     getattr(plugin, 'main')(**keyword_args)
 
     return 0
