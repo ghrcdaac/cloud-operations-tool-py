@@ -109,6 +109,13 @@ def return_parser(subparsers):
         metavar=''
     )
 
+    subparser.add_argument(
+        '-b', '--bulk',
+        help='If True the Cumulus bulk delete endpoint will be used for delete operations',
+        metavar='',
+        default=False
+    )
+
 
 def process_update_data(update_data, query_results):
     update_file = f'{os.getcwd()}/{update_data}'
@@ -137,54 +144,66 @@ def update_dictionary(results_dict, update_dict):
 def bulk_delete_cumulus(delete_file, query_results):
     cml = PyLOTHelpers().get_cumulus_api_instance()
 
-    # Open Delete definition
+    print(f'Opening delete definition: {delete_file}')
     delete_file = f'{os.getcwd()}/{delete_file}'
     with open(delete_file, 'r+', encoding='utf-8') as delete_definition:
         delete_config = json.load(delete_definition)
 
-    # Try batching the bulk deletes to reduce chance of overwhelming API
     id_array = []
     for granule in query_results:
         granule_id = granule.get('granuleId')
         id_array.append(granule_id)
-
+    print('Adding granule IDs to delete request...')
     delete_config.update({'ids': id_array})
 
     # Execute bulk delete
+    print('Submitting bulk delete request...')
     rsp = cml.bulk_delete(delete_config)
-    print(f'check bulk delete status:\npylot cumulus_api get async_operation {rsp.get("id")}')
+    print(f'Check bulk delete status using: pylot cumulus_api get async_operation {rsp.get("id")}')
 
 
-def delete_cumulus(record_type, query_results):
-    cml = PyLOTHelpers().get_cumulus_api_instance()
-    delete_function = getattr(cml, f'delete_{record_type}')
-
+def thread_function(function, records):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = []
-        for record in query_results:
-            print((f'Deleting: {record}'))
-            futures.append(executor.submit(delete_function, record))
+        for record in records:
+            futures.append(executor.submit(function, record))
         for future in concurrent.futures.as_completed(futures):
             print(future.result())
 
-    print(f'Deleted {len(query_results)} records.')
+
+def delete_cumulus(query_results):
+    cml = PyLOTHelpers().get_cumulus_api_instance()
+
+    records_to_update = []
+    for record in query_results:
+        product_volume = record.get('productVolume', '')
+        if not isinstance(product_volume, str):
+            record.update({'product_volume': str(product_volume)})
+            records_to_update.append(record)
+
+    if records_to_update:
+        update_cumulus('granule', records_to_update)
+
+    granule_ids = [x.get('granuleId') for x in query_results]
+    print('Removing from CMR...')
+    thread_function(cml.remove_granule_from_cmr, granule_ids)
+    print('CMR removal complete\n')
+
+    print('Deleting records...')
+    print(granule_ids)
+    thread_function(cml.delete_granule, granule_ids)
+    print('Deletion complete\n')
 
 
 def update_cumulus(record_type, query_results):
+    print('Updating records...')
     cml = PyLOTHelpers().get_cumulus_api_instance()
     update_function = getattr(cml, f'update_{record_type}')
-
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        for record in query_results:
-            futures.append(executor.submit(update_function, record))
-        for future in concurrent.futures.as_completed(futures):
-            print(future.result())
-
-    print(f'Updated {len(query_results)} records.')
+    thread_function(update_function, query_results)
+    print('Updating complete\n')
 
 
-def main(record_type, results=None, query=None, query_string=None, update_data=None, delete=None, **kwargs):
+def main(record_type, bulk=False, results=None, query=None, query_string=None, update_data=None, delete=None, **kwargs):
     query = OpenSearch.read_json_file(query) if query else json.loads(query_string)
     results_file = OpenSearch.query_opensearch(query_data=query, record_type=record_type, results=results, **kwargs)
 
@@ -205,6 +224,9 @@ def main(record_type, results=None, query=None, query_string=None, update_data=N
             update_cumulus(record_type, updated_results)
 
         if delete:
-            bulk_delete_cumulus(delete, query_results)
+            if bulk:
+                bulk_delete_cumulus(delete, query_results)
+            else:
+                delete_cumulus(query_results)
 
     return 0
