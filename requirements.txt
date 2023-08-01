@@ -1,6 +1,2 @@
-cryptography==37.0.4
-pyOpenSSL==22.0.0
-cumulus-api @ https://github.com/ghrcdaac/cumulus-api/archive/refs/tags/v1.0.0.zip
+cumulus-api @ https://github.com/ghrcdaac/cumulus-api/archive/refs/tags/v1.1.1.zip
 boto3==1.24.28
-pyfiglet==0.8.post1
-tabulate==0.8.10
