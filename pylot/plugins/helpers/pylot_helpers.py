@@ -36,7 +36,7 @@ class PyLOTHelpers:
         tempfile = f'{mkdtemp()}/{get_hashed_file_name}'
         if not os.path.isfile(tempfile):
             with open(tempfile, 'w', encoding='utf-8') as _file:
-                cml = CumulusApi(use_os_env=True)
+                cml = CumulusApi()
                 _file.write(cml.TOKEN)
         else:
             with open(tempfile, 'r', encoding='utf-8') as _file:
