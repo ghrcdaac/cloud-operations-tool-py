@@ -121,15 +121,14 @@ def main(action, target, output=None, **kwargs):
     results = []
     while True:
         api_response = getattr(capi, function_name)(**kwargs)
-        api_results = api_response.get('results', None)
-        if api_results is not None:
-            kwargs.update({'searchContext': api_response.get('meta', {}).get('searchContext', None)})
-            if len(results) + len(api_results) < limit:
-                results += api_results
-            else:
-                results += api_results[:limit - (len(results))]
+        record_count = api_response.get('meta', {}).get('count', 0)
+        api_results = api_response.get('results', [])
+        if api_results:
+            results.extend(api_results[:limit - (len(results))])
+            if len(results) >= limit or len(results) >= record_count:
                 break
-
+            else:
+                kwargs.update({'searchContext': api_response.get('meta', {}).get('searchContext', None)})
         else:
             results = api_response
             break
