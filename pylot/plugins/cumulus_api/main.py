@@ -73,10 +73,10 @@ def generate_parser(subparsers, action_target_dict):
     action_subparsers = cumulus_api_parser.add_subparsers(title='actions', dest='action', required=True)
     for action_k, target_v in action_target_dict.items():
         action_parser = action_subparsers.add_parser(
-                action_k, help=f'{action_k} action for the cumulus API',
-                usage=f'{action_k} <target> ',
-                description=f'{action_k} action for the cumulus API'
-            )
+            action_k, help=f'{action_k} action for the cumulus API',
+            usage=f'{action_k} <target> ',
+            description=f'{action_k} action for the cumulus API'
+        )
         target_subparsers = action_parser.add_subparsers(title='target', dest='target', required=True)
         for target_k, argument_v in target_v.items():
             plural = ''
