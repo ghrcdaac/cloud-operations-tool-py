@@ -2,7 +2,7 @@ import inspect
 import json
 import os
 from argparse import RawTextHelpFormatter
-from inspect import getmembers, isfunction
+from inspect import getmembers, isfunction, ismethod
 
 from cumulus_api import CumulusApi
 from ..helpers.pylot_helpers import PyLOTHelpers
@@ -16,17 +16,17 @@ def is_action_function(value):
     :return: boolean
     """
     ret = True
-    if not isfunction(value):
-        ret = False
-    else:
-        function_name = str(value).rsplit('.', maxsplit=1)[-1]
+    if isfunction(value) or ismethod(value):
+        function_name = str(value).split('.', maxsplit=1)[-1]
         if function_name.startswith('_'):
             ret = False
+    else:
+        ret = False
 
     return ret
 
 
-def extract_action_target_args():
+def extract_action_target_args(target_class=CumulusApi):
     """
     Extracts and processes all public member functions in the CumulusApi file and returns a dictionary of the form
     {"action": {"target": {arguments}}}
@@ -35,7 +35,7 @@ def extract_action_target_args():
     """
     # Actions -> targets -> params
     action_target_dict = {}
-    for member_function in getmembers(CumulusApi, is_action_function):
+    for member_function in getmembers(target_class, is_action_function):
         arguments_set = set()
         inspection = inspect.getfullargspec(member_function[1])
         for argument in inspection.args[1:]:
