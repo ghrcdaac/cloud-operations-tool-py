@@ -36,16 +36,12 @@ def extract_action_target_args(target_class=CumulusApi):
     # Actions -> targets -> params
     action_target_dict = {}
     for member_function in getmembers(target_class, is_action_function):
-        arguments_set = set()
         inspection = inspect.getfullargspec(member_function[1])
-        for argument in inspection.args[1:]:
-            arguments_set.add(argument)
+        args = inspection.args[1:]
         split_action_target = str(member_function[0]).split('_', maxsplit=1)
-        if len(arguments_set) == 0:
-            arguments_set = ''
         action_target_dict.setdefault(
-            split_action_target[0], {split_action_target[1]: arguments_set}
-        )[split_action_target[1]] = arguments_set
+            split_action_target[0], {split_action_target[1]: args}
+        )[split_action_target[1]] = args
 
     return action_target_dict
 

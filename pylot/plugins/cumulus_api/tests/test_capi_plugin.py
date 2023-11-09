@@ -11,6 +11,7 @@ class FakeClass:
         temp_2 = ''
 
     def public_function(self, data, not_data):
+        self.__private_function(data, not_data)
         pass
 
     def __private_function(self, data, not_data):
@@ -22,6 +23,12 @@ class FakeClass:
 
 
 class TestCumulusApi(unittest.TestCase):
+    def test_fake_class(self):
+        fc = FakeClass()
+        fc.public_function('', '')
+        fc.static_function('', '')
+        pass
+
     def test_is_action_function(self):
         fc = FakeClass()
         action_function_names = []
@@ -33,7 +40,7 @@ class TestCumulusApi(unittest.TestCase):
 
     def test_extract_action_target_args(self):
         res = extract_action_target_args(FakeClass)
-        self.assertEqual(res, {'public': {'function': {'data', 'not_data'}}, 'static': {'function': {'not_data'}}})
+        self.assertEqual(res, {'public': {'function': ['data', 'not_data']}, 'static': {'function': ['not_data']}})
 
     def test_generate_parser(self):
         parser = argparse.ArgumentParser(
