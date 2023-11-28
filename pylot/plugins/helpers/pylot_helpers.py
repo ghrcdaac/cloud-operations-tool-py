@@ -1,9 +1,9 @@
 import json
 import os
 import pathlib
+from time import time
 from dataclasses import dataclass
-from datetime import datetime
-from tempfile import mkdtemp
+from tempfile import gettempdir
 
 from cumulus_api import CumulusApi
 
@@ -18,34 +18,20 @@ class PyLOTHelpers:
             options = json.load(_file)
         return options
 
-    @staticmethod
-    def get_hash_token_file():
-        now: datetime = datetime.now()
-        captured_time: int = 60
-        for ele in range(0, 60, 15):
-            if now.minute < ele:
-                captured_time = ele
-                break
-        return f"{now.day}-{now.hour}-{captured_time}"
-
     @classmethod
     def get_cumulus_api_instance(cls):
-        """ Get Cumulus instance with cached token"""
-        if 'PRIVATE_API_LAMBDA_ARN' in os.environ:
-            print('getting non-token instance')
-            cml = CumulusApi()
-            pass
-        else:
-            print('getting token instance')
-            get_hashed_file_name = cls.get_hash_token_file()
-            token: str
-            tempfile = f'{mkdtemp()}/{get_hashed_file_name}'
-            if not os.path.isfile(tempfile):
-                with open(tempfile, 'w', encoding='utf-8') as _file:
-                    cml = CumulusApi()
-                    _file.write(cml.TOKEN)
-            else:
-                with open(tempfile, 'r', encoding='utf-8') as _file:
+        token_file = f'{gettempdir()}/pylot_token/token'
+        token = None
+        if os.path.isfile(token_file):
+            file_stat = os.stat(token_file)
+            if int(time()) - int(file_stat.st_mtime) < 3600:
+                with open(token_file, 'r', encoding='utf-8') as _file:
                     token = _file.readline()
-                    cml = CumulusApi(token=token)
+
+        cml = CumulusApi(token=token)
+        if not token and cml.TOKEN:
+            with open(token_file, 'w', encoding='utf-8') as _file:
+                cml = CumulusApi()
+                _file.write(cml.TOKEN)
+
         return cml
