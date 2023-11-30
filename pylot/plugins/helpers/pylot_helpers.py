@@ -25,6 +25,7 @@ class PyLOTHelpers:
         token_file = f'{token_dir}token'
         token = None
         if os.path.isfile(token_file):
+            print(f'Using local token: {token_file}')
             file_stat = os.stat(token_file)
             if int(time()) - int(file_stat.st_mtime) < 3600:
                 with open(token_file, 'r', encoding='utf-8') as _file:
