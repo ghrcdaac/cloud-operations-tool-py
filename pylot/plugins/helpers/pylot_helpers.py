@@ -20,7 +20,9 @@ class PyLOTHelpers:
 
     @classmethod
     def get_cumulus_api_instance(cls):
-        token_file = f'{gettempdir()}/pylot_token/token'
+        token_dir = f'{gettempdir()}/pylot_token/'
+        os.makedirs(token_dir, exist_ok=True)
+        token_file = f'{token_dir}token'
         token = None
         if os.path.isfile(token_file):
             file_stat = os.stat(token_file)
@@ -30,8 +32,7 @@ class PyLOTHelpers:
 
         cml = CumulusApi(token=token)
         if not token and cml.TOKEN:
-            with open(token_file, 'w', encoding='utf-8') as _file:
-                cml = CumulusApi()
+            with open(token_file, 'w+', encoding='utf-8') as _file:
                 _file.write(cml.TOKEN)
 
         return cml
