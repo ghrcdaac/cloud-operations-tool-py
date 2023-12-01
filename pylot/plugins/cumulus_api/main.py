@@ -75,6 +75,9 @@ def generate_parser(subparsers, action_target_dict):
         )
         target_subparsers = action_parser.add_subparsers(title='target', dest='target', required=True)
         for target_k, argument_v in target_v.items():
+            # TODO: Remove this reversal once we have migrated to Cumulus v18.1.0+
+            if 'granule_id' in argument_v and 'collection_id' in argument_v:
+                argument_v.reverse()
             plural = ''
             for arg in argument_v:
                 plural.join(f'<{arg}> ')
@@ -89,7 +92,7 @@ def generate_parser(subparsers, action_target_dict):
                                     f" definition: \'{{\"field_1\": \"value_1\", \"field_2\": \"value_2\"}}\'"
                 else:
                     arg_help_text = f'Provide a {argument}'
-                target_subparser.add_argument(argument, nargs='?', help=arg_help_text)
+                target_subparser.add_argument(argument, nargs='?', help=arg_help_text, default='')
             pass
     pass
 
