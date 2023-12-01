@@ -1,3 +1,3 @@
 
-cumulus-api @ https://github.com/ghrcdaac/cumulus-api/archive/refs/tags/v3.0.0.zip
+cumulus-api @ https://github.com/ghrcdaac/cumulus-api/archive/refs/tags/v3.0.1.zip
 boto3==1.24.28
