@@ -1,8 +1,5 @@
 [![Coverage Status](https://coveralls.io/repos/github/ghrcdaac/cloud-operations-tool-py/badge.svg?branch=main)](https://coveralls.io/github/ghrcdaac/cloud-operations-tool-py?branch=main)
 ![Build Status](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/build-and-test.yml/badge.svg?branch=main)
-![Code Quality Workflow](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/code-quality.yml/badge.svg?branch=main)
-![Code Quality](https://api.codiga.io/project/33781/score/svg)
-![Code Grade](https://api.codiga.io/project/33781/status/svg)
 <p align="center">
 <img src="img/pylot.svg"
      alt="pylot" width=50%/>
