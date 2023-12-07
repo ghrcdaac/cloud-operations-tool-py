@@ -13,42 +13,49 @@ class QueryRDS:
         return data
 
     @staticmethod
-    def query_rds(payload, results='query_results.json', **kwargs):
+    def invoke_rds_lambda(query_data, lambda_client=boto3.client('lambda'), **kwargs):
         lambda_arn = os.getenv('RDS_LAMBDA_ARN')
         if not lambda_arn:
-            raise Exception('The ARN for the RDS lambda is not defined. Provide it as an environment variable.')
+            raise ValueError('The ARN for the RDS lambda is not defined. Provide it as an environment variable.')
 
         # Invoke RDS lambda
         print('Invoking RDS lambda...')
-        client = boto3.client('lambda')
-        rsp = client.invoke(
+        rsp = lambda_client.invoke(
             FunctionName=lambda_arn,
-            Payload=json.dumps(payload).encode('utf-8')
+            Payload=json.dumps(query_data).encode('utf-8')
         )
         if rsp.get('StatusCode') != 200:
             raise Exception(
                 f'The RDS lambda failed. Check the Cloudwatch logs for {os.getenv("RDS_LAMBDA_ARN")}'
             )
 
-        # Download results from S3
-        ret_dict = json.loads(rsp.get('Payload').read().decode('utf-8'))
-        print(f'Query matched {ret_dict.get("count")} records.')
-        print(f'Downloading results to file: {os.getcwd()}/{results}')
-        s3_client = boto3.client('s3')
+        return rsp
+
+    @staticmethod
+    def download_file(bucket, key, results, s3_client=boto3.client('s3')):
+        print('Downloading query results...')
         s3_client.download_file(
-            Bucket=ret_dict.get('bucket'),
-            Key=ret_dict.get('key'),
+            Bucket=bucket,
+            Key=key,
             Filename=f'{os.getcwd()}/{results}'
-        )
-        print(f'Deleting remote S3 results file: {ret_dict.get("bucket")}/{ret_dict.get("key")}')
-        s3_client.delete_object(
-            Bucket=ret_dict.get('bucket'),
-            Key=ret_dict.get('key')
         )
 
         file = f'{os.getcwd()}/{results}'
-
         return file
+
+
+def query_rds(query_data, results='query_results.json', **kwargs):
+    rds = QueryRDS()
+    if isinstance(query_data, str) and os.path.isfile(query_data):
+        query_data = rds.read_json_file(query_data)
+
+    rsp = rds.invoke_rds_lambda(query_data)
+    ret_dict = json.loads(rsp.get('Payload').read().decode('utf-8'))
+
+    # Download results from S3
+    file = rds.download_file(ret_dict.get('Bucket'), ret_dict.get('Key'), results)
+    print(f'{ret_dict.get("record_count")} records obtained: {os.getcwd()}/{results}')
+    return file
 
 
 def return_parser(subparsers):
@@ -103,10 +110,8 @@ def return_parser(subparsers):
     )
 
 
-def main(record_type, results=None, query=None, query_string=None, **kwargs):
-    rds = QueryRDS()
-    query = rds.read_json_file(query) if query else json.loads(query_string)
-    print(f'Using query: {json.dumps(query)}')
-    rds.query_rds(payload=query)
+def main(query=None, **kwargs):
+    query_rds(query_data=query)
     print('Complete')
+
     return 0
