@@ -59,12 +59,14 @@ def query_opensearch(query_data, record_type, results='query_results.json', term
     open_search = OpenSearch()
     if isinstance(query_data, str) and os.path.isfile(query_data):
         query_data = open_search.read_json_file(query_data)
+    else:
+        query_data = json.loads(query_data)
 
     rsp = open_search.invoke_opensearch_lambda(query_data, record_type, terminate_after)
     ret_dict = json.loads(rsp.get('Payload').read().decode('utf-8'))
 
     # Download results from S3
-    file = open_search.download_file(ret_dict.get('Bucket'), ret_dict.get('Key'), results)
+    file = open_search.download_file(bucket=ret_dict.get('bucket'), key=ret_dict.get('key'), results=results)
     print(f'{ret_dict.get("record_count")} {record_type} records obtained: {os.getcwd()}/{results}')
     return file
 

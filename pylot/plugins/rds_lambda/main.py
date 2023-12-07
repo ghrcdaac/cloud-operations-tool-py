@@ -48,24 +48,30 @@ def query_rds(query_data, results='query_results.json', **kwargs):
     rds = QueryRDS()
     if isinstance(query_data, str) and os.path.isfile(query_data):
         query_data = rds.read_json_file(query_data)
+    else:
+        query_data = json.loads(query_data)
+
+    query_data = {'rds_config': query_data, 'is_test': True}
+
 
     rsp = rds.invoke_rds_lambda(query_data)
     ret_dict = json.loads(rsp.get('Payload').read().decode('utf-8'))
 
     # Download results from S3
-    file = rds.download_file(ret_dict.get('Bucket'), ret_dict.get('Key'), results)
-    print(f'{ret_dict.get("record_count")} records obtained: {os.getcwd()}/{results}')
+    file = rds.download_file(bucket=ret_dict.get('bucket'), key=ret_dict.get('key'), results=results)
+    print(
+        f'{ret_dict.get("count")} {query_data.get("rds_config").get("records")} records obtained: '
+        f'{os.getcwd()}/{results}'
+    )
     return file
 
 
 def return_parser(subparsers):
     query = {
-        "rds_config": {
-            "records": "granules",
-            "where": "name LIKE nalma% ",
-            "columns": ["granule_id", "status"],
-            "limit": 10
-        }
+        "records": "granules",
+        "where": "name LIKE nalma% ",
+        "columns": ["granule_id", "status"],
+        "limit": 10
     }
     subparser = subparsers.add_parser(
         'rds_lambda',
@@ -73,19 +79,11 @@ def return_parser(subparsers):
         description='Submit queries to the Cumulus RDS instance.\n'
                     f'Example query: {json.dumps(query)}'
     )
-    choices = ['granules', 'collections', 'providers', 'pdrs', 'rules', 'logs', 'executions', 'reconciliationReport']
-    choice_str = str(choices).strip('[').strip(']').replace("'", '')
     subparser.add_argument(
-        'record_type',
-        help=f'The RDS table to be queried: {choice_str}',
-        metavar='record_type',
-        choices=choices
-    )
-    subparser.add_argument(
-        '-l', '--limit',
-        help='Limit the number of records returned from RDS. Default is 100. Use 0 to retrieve all matches.',
-        metavar='',
-        default=100
+        'query',
+        help='A file containing an RDS Lambda query: <filename>.json or a json query string '
+             'using the RDS DSL syntax: https://github.com/ghrcdaac/ghrc_rds_lambda?tab=readme-ov-file#querying',
+        metavar='query'
     )
     subparser.add_argument(
         '-r', '--results',
@@ -94,24 +92,9 @@ def return_parser(subparsers):
         default='query_results.json'
     )
 
-    group = subparser.add_mutually_exclusive_group(required=True)
-    group.add_argument(
-        '-q', '--query',
-        help='The name of a file containing an RDS lambda query: <filename>.json',
-        metavar=''
-    )
-    group.add_argument(
-        '-s', '--query-string',
-        help='A json query string using the RDS DSL: '
-             'https://github.com/ghrcdaac/ghrc_rds_lambda#querying '
-             'Example: '
-             '\'{"rds_config": {"records": "", "columns": ["granule_id"], "where": "name=nalmaraw", "limit": 0}}\'',
-        metavar=''
-    )
 
-
-def main(query=None, **kwargs):
-    query_rds(query_data=query)
+def main(query=None, records=None, **kwargs):
+    query_rds(query_data=query, record_type=records)
     print('Complete')
 
     return 0
