@@ -12,8 +12,9 @@ class QueryRDS:
 
         return data
 
-    @staticmethod
-    def invoke_rds_lambda(query_data, lambda_client=boto3.client('lambda'), **kwargs):
+    def invoke_rds_lambda(self, query_data, lambda_client=None, **kwargs):
+        if not lambda_client:
+            lambda_client = boto3.client('lambda')
         lambda_arn = os.getenv('RDS_LAMBDA_ARN')
         if not lambda_arn:
             raise ValueError('The ARN for the RDS lambda is not defined. Provide it as an environment variable.')
@@ -31,8 +32,9 @@ class QueryRDS:
 
         return rsp
 
-    @staticmethod
-    def download_file(bucket, key, results, s3_client=boto3.client('s3')):
+    def download_file(self, bucket, key, results, s3_client=None):
+        if not s3_client:
+            s3_client = boto3.client('s3')
         print('Downloading query results...')
         s3_client.download_file(
             Bucket=bucket,

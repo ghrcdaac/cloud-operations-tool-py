@@ -15,8 +15,11 @@ class OpenSearch:
 
         return data
 
-    @staticmethod
-    def invoke_opensearch_lambda(query_data, record_type, terminate_after, lambda_client=boto3.client('lambda'), **kwargs):
+    def invoke_opensearch_lambda(
+            self, query_data, record_type, terminate_after, lambda_client=None, **kwargs
+    ):
+        if not lambda_client:
+            lambda_client = boto3.client('lambda')
         lambda_arn = os.getenv('OPENSEARCH_LAMBDA_ARN')
         if not lambda_arn:
             raise ValueError('The ARN for the OpenSearch lambda is not defined. Provide it as an environment variable.')
@@ -42,8 +45,9 @@ class OpenSearch:
 
         return rsp
 
-    @staticmethod
-    def download_file(bucket, key, results, s3_client=boto3.client('s3')):
+    def download_file(self, bucket, key, results, s3_client=None):
+        if not s3_client:
+            s3_client = boto3.client('s3')
         print('Downloading query results...')
         s3_client.download_file(
             Bucket=bucket,
