@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/ghrcdaac/cloud-operations-tool-py/badge.svg?branch=main)](https://coveralls.io/github/ghrcdaac/cloud-operations-tool-py?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/ghrcdaac/cloud-operations-tool-py/badge.svg)](https://coveralls.io/github/ghrcdaac/cloud-operations-tool-py)
 ![Build Status](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/build-and-test.yml/badge.svg?branch=main)
 <p align="center">
 <img src="img/pylot.svg"
