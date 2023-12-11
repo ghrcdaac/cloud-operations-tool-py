@@ -1,6 +1,7 @@
 import json
 import os
 import concurrent.futures
+import pathlib
 
 import boto3
 from ..helpers.pylot_helpers import PyLOTHelpers
@@ -14,11 +15,14 @@ class OpenSearch:
 
         return data
 
-    @staticmethod
-    def query_opensearch(query_data, record_type, results='query_results.json', terminate_after=100, **kwargs):
+    def invoke_opensearch_lambda(
+            self, query_data, record_type, terminate_after, lambda_client=None, **kwargs
+    ):
+        if not lambda_client:
+            lambda_client = boto3.client('lambda')
         lambda_arn = os.getenv('OPENSEARCH_LAMBDA_ARN')
         if not lambda_arn:
-            raise Exception('The ARN for the OpenSearch lambda is not defined. Provide it as an environment variable.')
+            raise ValueError('The ARN for the OpenSearch lambda is not defined. Provide it as an environment variable.')
 
         # Invoke OpenSearch lambda
         payload = {
@@ -29,30 +33,46 @@ class OpenSearch:
         }
 
         print('Invoking OpenSearch lambda...')
-        client = boto3.client('lambda')
-        rsp = client.invoke(
+        rsp = lambda_client.invoke(
             FunctionName=lambda_arn,
             Payload=json.dumps(payload).encode('utf-8')
         )
+        print(rsp)
         if rsp.get('StatusCode') != 200:
             raise Exception(
                 f'The OpenSearch lambda failed. Check the Cloudwatch logs for {os.getenv("OPENSEARCH_LAMBDA_ARN")}'
             )
 
-        # Download results from S3
+        return rsp
+
+    def download_file(self, bucket, key, results, s3_client=None):
+        if not s3_client:
+            s3_client = boto3.client('s3')
         print('Downloading query results...')
-        ret_dict = json.loads(rsp.get('Payload').read().decode('utf-8'))
-        # print(f'ret_dict: {ret_dict}')
-        s3_client = boto3.client('s3')
         s3_client.download_file(
-            Bucket=ret_dict.get('bucket'),
-            Key=ret_dict.get('key'),
+            Bucket=bucket,
+            Key=key,
             Filename=f'{os.getcwd()}/{results}'
         )
 
         file = f'{os.getcwd()}/{results}'
-        print(f'{ret_dict.get("record_count")} {record_type} records obtained: {os.getcwd()}/{results}')
         return file
+
+
+def query_opensearch(query_data, record_type, results='query_results.json', terminate_after=100, **kwargs):
+    open_search = OpenSearch()
+    if isinstance(query_data, str) and os.path.isfile(query_data):
+        query_data = open_search.read_json_file(query_data)
+    else:
+        query_data = json.loads(query_data)
+
+    rsp = open_search.invoke_opensearch_lambda(query_data, record_type, terminate_after)
+    ret_dict = json.loads(rsp.get('Payload').read().decode('utf-8'))
+
+    # Download results from S3
+    file = open_search.download_file(bucket=ret_dict.get('bucket'), key=ret_dict.get('key'), results=results)
+    print(f'{ret_dict.get("record_count")} {record_type} records obtained: {os.getcwd()}/{results}')
+    return file
 
 
 def return_parser(subparsers):
@@ -85,14 +105,9 @@ def return_parser(subparsers):
     group = subparser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '-q', '--query',
-        help='The name of a file containing an OpenSearch query: <filename>.json',
-        metavar=''
-    )
-    group.add_argument(
-        '-s', '--query-string',
-        help='A json query string using the OpenSearch DSL: '
-             'https://opensearch.org/docs/latest/opensearch/query-dsl/index/ '
-             'Example: \'{"query": {"term": {"collectionId": "goesimpacts___1"}}}\'',
+        help='The name of a file containing an OpenSearch query: <filename>.json or a json query string '
+             'using the OpenSearch DSL: \'{"query": {"term": {"collectionId": "goesimpacts___1"}}}\'. '
+             'See: https://opensearch.org/docs/latest/opensearch/query-dsl/index/ ',
         metavar=''
     )
 
@@ -118,9 +133,11 @@ def return_parser(subparsers):
 
 
 def process_update_data(update_data, query_results):
-    update_file = f'{os.getcwd()}/{update_data}'
-    print(f'Attempting to update using data file: {update_file} ')
-    with open(update_file, 'r', encoding='utf-8') as json_file:
+    if not os.path.isfile(update_data):
+        update_data = f'{pathlib.Path(__file__).parent.resolve()}/{update_data}'
+
+    print(f'Attempting to update using data file: {update_data} ')
+    with open(update_data, 'r', encoding='utf-8') as json_file:
         update_dict = json.load(json_file)
 
     for record in query_results:
@@ -143,9 +160,9 @@ def update_dictionary(results_dict, update_dict):
 
 def bulk_delete_cumulus(delete_file, query_results):
     cml = PyLOTHelpers().get_cumulus_api_instance()
-
+    if not os.path.isfile(delete_file):
+        delete_file = f'{pathlib.Path(__file__).parent.resolve()}/{delete_file}'
     print(f'Opening delete definition: {delete_file}')
-    delete_file = f'{os.getcwd()}/{delete_file}'
     with open(delete_file, 'r+', encoding='utf-8') as delete_definition:
         delete_config = json.load(delete_definition)
 
@@ -203,12 +220,10 @@ def update_cumulus(record_type, query_results):
     print('Updating complete\n')
 
 
-def main(record_type, bulk=False, results=None, query=None, query_string=None, update_data=None, delete=None, **kwargs):
-    query = OpenSearch.read_json_file(query) if query else json.loads(query_string)
-    results_file = OpenSearch.query_opensearch(query_data=query, record_type=record_type, results=results, **kwargs)
+def main(record_type, bulk=False, results=None, query=None, update_data=None, delete=None, **kwargs):
+    results_file = query_opensearch(query_data=query, record_type=record_type, results=results, **kwargs)
 
     if update_data or delete:
-        # results_file = f'{os.getcwd()}/{}'
         with open(results_file, 'r', encoding='utf-8') as results_file:
             query_results = json.load(results_file)
 
