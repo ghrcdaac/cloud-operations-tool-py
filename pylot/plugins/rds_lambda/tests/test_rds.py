@@ -30,7 +30,7 @@ class TestRDS(unittest.TestCase):
     def test_query_rds(self, mock_opensearch, mock_json_loads):
         mock_opensearch.invoke_rds_lambda.return_value = ''
         mock_opensearch.invoke_rds_lambda.return_value = ''
-        query_rds(query_data={}, record_type='')
+        query_rds(query={}, record_type='')
         pass
 
     def test_invoke_rds_lambda(self):
