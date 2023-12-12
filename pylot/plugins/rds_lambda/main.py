@@ -46,23 +46,22 @@ class QueryRDS:
         return file
 
 
-def query_rds(query_data, results='query_results.json', **kwargs):
+def query_rds(query, results='query_results.json', **kwargs):
     rds = QueryRDS()
-    if isinstance(query_data, str) and os.path.isfile(query_data):
-        query_data = rds.read_json_file(query_data)
+    if isinstance(query, str) and os.path.isfile(query):
+        query = rds.read_json_file(query)
     else:
-        query_data = json.loads(query_data)
+        query = json.loads(query)
 
-    query_data = {'rds_config': query_data, 'is_test': True}
+    query = {'rds_config': query, 'is_test': True}
 
-
-    rsp = rds.invoke_rds_lambda(query_data)
+    rsp = rds.invoke_rds_lambda(query)
     ret_dict = json.loads(rsp.get('Payload').read().decode('utf-8'))
 
     # Download results from S3
     file = rds.download_file(bucket=ret_dict.get('bucket'), key=ret_dict.get('key'), results=results)
     print(
-        f'{ret_dict.get("count")} {query_data.get("rds_config").get("records")} records obtained: '
+        f'{ret_dict.get("count")} {query.get("rds_config").get("records")} records obtained: '
         f'{os.getcwd()}/{results}'
     )
     return file
@@ -95,8 +94,8 @@ def return_parser(subparsers):
     )
 
 
-def main(query=None, records=None, **kwargs):
-    query_rds(query_data=query, record_type=records)
+def main(**kwargs):
+    query_rds(**kwargs)
     print('Complete')
 
     return 0
