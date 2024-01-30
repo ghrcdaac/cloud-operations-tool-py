@@ -4,6 +4,7 @@ import os
 from argparse import RawTextHelpFormatter
 from inspect import getmembers, isfunction, ismethod
 
+import boto3
 from cumulus_api import CumulusApi
 from ..helpers.pylot_helpers import PyLOTHelpers
 
@@ -117,9 +118,11 @@ def main(action, target, output=None, **kwargs):
     limit = kwargs.get('limit', cumulus_api_lambda_return_limit)
     function_name = f'{action}_{target}'
     print(f'Calling Cumulus API: {function_name}')
+    api_function = getattr(capi, function_name)
     results = []
     while True:
-        api_response = getattr(capi, function_name)(**kwargs)
+        api_response = api_function(**kwargs)
+        api_response = error_handling(api_response, api_function, **kwargs)
         record_count = api_response.get('meta', {}).get('count', 0)
         api_results = api_response.get('results', [])
         if api_results:
@@ -141,3 +144,50 @@ def main(action, target, output=None, **kwargs):
         print(json_results)
 
     return 0
+
+
+def error_handling(results, api_function, **kwargs):
+    ret = ''
+    if results.get('error', '') == 'Bad Request':
+        if 'Member must have length less than or equal to 8192' in results.get('message', ''):
+            print('Handling 8192 character limit error...')
+            cli = boto3.client('s3')
+            stack_prefix = os.getenv('STACK_PREFIX')
+            if not stack_prefix:
+                raise ValueError('The STACK_PREFIX environment variable has not been set')
+            bucket = f'{stack_prefix}-internal'
+
+            common_key_prefix = f'{stack_prefix}/workflows/'
+            dgw = f'{common_key_prefix}DiscoverGranules.json'
+            hww = f'{common_key_prefix}HelloWorldWorkflow.json'
+
+            rsp = cli.get_object(
+                Bucket=bucket,
+                Key=dgw
+            )
+            dgw_full_path = f'/tmp/{dgw.rsplit("/", maxsplit=1)[-1]}'
+            with open(dgw_full_path, 'wb+') as local_file:
+                local_file.write(rsp.get('Body').read())
+                local_file.seek(0)
+
+                cli.copy_object(
+                    Bucket=bucket,
+                    Key=dgw,
+                    CopySource={
+                        'Bucket': bucket,
+                        'Key': hww
+                    }
+                )
+
+                print('Reissuing API request...')
+                ret = api_function(**kwargs)
+
+                cli.put_object(
+                    Body=local_file,
+                    Bucket=bucket,
+                    Key=dgw
+                )
+    else:
+        ret = results
+
+    return ret
