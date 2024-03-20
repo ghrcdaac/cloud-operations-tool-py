@@ -166,6 +166,7 @@ def error_handling(results, api_function, **kwargs):
                 Key=dgw
             )
             dgw_full_path = f'/tmp/{dgw.rsplit("/", maxsplit=1)[-1]}'
+            print(f'Writing {dgw} to {dgw_full_path}')
             with open(dgw_full_path, 'wb+') as local_file:
                 local_file.write(rsp.get('Body').read())
                 local_file.seek(0)
@@ -182,12 +183,30 @@ def error_handling(results, api_function, **kwargs):
                 print('Reissuing API request...')
                 ret = api_function(**kwargs)
 
+                print(f'Uploading {dgw_full_path} to {dgw}')
                 cli.put_object(
                     Body=local_file,
                     Bucket=bucket,
                     Key=dgw
                 )
+
+                ec = boto3.client('events')
+                rule_name = f'{stack_prefix}-custom-{kwargs.get("data").get("name")}'
+                res = ec.list_targets_by_rule(Rule=rule_name)
+                print('Updating rule targets HelloWorldWorkflow -> DiscoverGranules')
+                for target in res.get('Targets'):
+                    if target.get('Id') == 'lambdaTarget':
+                        input_json = json.loads(target.get('Input'))
+                        definition = input_json.get('definition')
+                        definition.update({
+                            'arn': definition.get('arn').replace('HelloWorldWorkflow', 'DiscoverGranules'),
+                            'definition': {},
+                            'name': 'DiscoverGranules'
+                        })
+                        target.update({'Input': json.dumps(input_json)})
+
+                ec.put_targets(Rule=rule_name, Targets=res.get('Targets'))
     else:
         ret = results
-
+    print('Error handling complete')
     return ret
