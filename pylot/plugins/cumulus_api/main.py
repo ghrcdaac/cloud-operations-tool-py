@@ -122,15 +122,14 @@ def main(action, target, output=None, **kwargs):
     results = []
     while True:
         api_response = api_function(**kwargs)
-        api_response = error_handling(api_response, api_function, **kwargs)
-        record_count = api_response.get('meta', {}).get('count', 0)
-        api_results = api_response.get('results', [])
-        if api_results:
+        if isinstance(api_response, dict) and 'results' in api_response:
+            api_response = error_handling(api_response, api_function, **kwargs)
+            kwargs.update({'searchContext': api_response.get('meta', {}).get('searchContext', None)})
+            record_count = api_response.get('meta', {}).get('count', 0)
+            api_results = api_response.get('results', [])            
             results.extend(api_results[:limit - (len(results))])
             if len(results) >= limit or len(results) >= record_count:
                 break
-            else:
-                kwargs.update({'searchContext': api_response.get('meta', {}).get('searchContext', None)})
         else:
             results = api_response
             break
