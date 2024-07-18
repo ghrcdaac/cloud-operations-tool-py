@@ -148,8 +148,9 @@ def main(action, target, output=None, **kwargs):
 def error_handling(results, api_function, **kwargs):
     ret = ''
     if results.get('error', '') == 'Bad Request':
-        if 'Member must have length less than or equal to 8192' in results.get('message', ''):
-            print('Handling 8192 character limit error...')
+        error_message = results.get('message', '')
+        if 'Member must have length less than or equal to 8192' in error_message:
+            print(f'Handling error: {error_message}')
             cli = boto3.client('s3')
             stack_prefix = os.getenv('STACK_PREFIX')
             if not stack_prefix:
@@ -207,5 +208,4 @@ def error_handling(results, api_function, **kwargs):
                 ec.put_targets(Rule=rule_name, Targets=res.get('Targets'))
     else:
         ret = results
-    print('Error handling complete')
     return ret
