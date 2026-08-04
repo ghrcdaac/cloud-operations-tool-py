@@ -1,3 +1,7 @@
+⛔ [DEPRECATED] - This repository has been open sourced and moved to https://github.com/nasa/GHRC-PyLOT. Please reference the new location for updates.
+
+
+
 [![Coverage Status](https://coveralls.io/repos/github/ghrcdaac/cloud-operations-tool-py/badge.svg)](https://coveralls.io/github/ghrcdaac/cloud-operations-tool-py)
 ![Build Status](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/build-and-test.yml/badge.svg?branch=main)
 <p align="center">
